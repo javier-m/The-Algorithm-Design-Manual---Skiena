@@ -41,10 +41,8 @@ class BinarySearchTree:
             node = node.right
         return node
 
-    def traverse(self, action=None):
+    def traverse(self, action=lambda node: print(f'#{node.value} -> {node.content}')):
         """O(n)"""
-        if not action:
-            action = lambda node: print(f'#{node.value} -> {node.content}')
         stack = Stack(implementation='array')
 
         class StackItem:
@@ -138,23 +136,22 @@ class BinarySearchTree:
             leftmost_child.left = node.left
             leftmost_child.left.parent = leftmost_child
             # find leftmost_child.right
-            # if lone node
-            if not leftmost_child.right:
-                leftmost_child.right = node.right
-                # check if there is actually node.right
-                # because if node was the leftmost_child's parent,
-                # its right has been set to None
-                if leftmost_child.right:
-                    leftmost_child.right.parent = leftmost_child
-            # otherwise it has a right child but no left child
+            # if it has a right child but no left child
             # and then this right child should occupy the leftmost_child's
             # former position
-            else:
+            if leftmost_child.right:
                 if leftmost_child.parent is node:
                     pass
                 else:
                     leftmost_child.parent.left = leftmost_child.right
                     leftmost_child.parent.left.parent = leftmost_child.parent
+            if leftmost_child.parent is not node:
+                leftmost_child.right = node.right
+            # check if there is actually node.right
+            # because if node was the leftmost_child's parent,
+            # its right has been set to None
+            if leftmost_child.right:
+                leftmost_child.right.parent = leftmost_child
             # bind it to the parent_node
             leftmost_child.parent = parent_node
             if parent_node:

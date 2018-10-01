@@ -89,7 +89,7 @@ def test_delete_lone_root_node():
     assert traversed_list == []
 
 
-def test_delete_lone_node_left_from_parent():
+def test_delete_lone_node_left_from_parent_root():
     binary_search_tree = BinarySearchTree()
     binary_search_tree.insert(1)
     binary_search_tree.insert(0)
@@ -104,7 +104,7 @@ def test_delete_lone_node_left_from_parent():
     assert parent_node.left is None
 
 
-def test_delete_lone_node_right_from_parent():
+def test_delete_lone_node_right_from_parent_root():
     binary_search_tree = BinarySearchTree()
     binary_search_tree.insert(1)
     binary_search_tree.insert(0)
@@ -117,6 +117,52 @@ def test_delete_lone_node_right_from_parent():
     parent_node = binary_search_tree.search(1)
     assert traversed_list == [0, 1]
     assert parent_node.right is None
+
+
+def test_delete_lone_node_left_from_parent():
+    binary_search_tree = BinarySearchTree()
+    binary_search_tree.insert(3)
+    binary_search_tree.insert(1)
+    binary_search_tree.insert(0)
+    binary_search_tree.insert(2)
+    node = binary_search_tree.search(1)
+    binary_search_tree.delete(node)
+    traversed_list = []
+    action = lambda node: traversed_list.append(node.value)
+    binary_search_tree.traverse(action)
+    new_node = binary_search_tree.search(2)
+    new_child_node = binary_search_tree.search(0)
+    assert traversed_list == [0, 2, 3]
+    assert binary_search_tree.root.left is new_node
+    assert new_node.parent is binary_search_tree.root
+    assert new_node.left is new_child_node
+    assert new_child_node.parent is new_node
+    assert new_node.right is None
+
+
+def test_delete_lone_node_right_from_parent():
+    binary_search_tree = BinarySearchTree()
+    binary_search_tree.insert(1)
+    binary_search_tree.insert(0)
+    binary_search_tree.insert(3)
+    binary_search_tree.insert(2)
+    binary_search_tree.insert(4)
+    binary_search_tree.insert(5)
+    node = binary_search_tree.search(3)
+    binary_search_tree.delete(node)
+    traversed_list = []
+    action = lambda node: traversed_list.append(node.value)
+    binary_search_tree.traverse(action)
+    new_node = binary_search_tree.search(4)
+    new_left_child_node = binary_search_tree.search(2)
+    new_right_child_node = binary_search_tree.search(5)
+    assert traversed_list == [0, 1, 2, 4, 5]
+    assert binary_search_tree.root.right is new_node
+    assert new_node.parent is binary_search_tree.root
+    assert new_node.left is new_left_child_node
+    assert new_left_child_node.parent is new_node
+    assert new_node.right is new_right_child_node
+    assert new_right_child_node.parent is new_node
 
 
 def test_delete_root_node_only_left_child():
@@ -264,18 +310,62 @@ def test_delete_lone_leftmost_rightsubtree_child():
     traversed_list = []
     action = lambda node: traversed_list.append(node.value)
     binary_search_tree.traverse(action)
+    new_node = binary_search_tree.search(4)
+    new_child_node = binary_search_tree.search(2)
+    assert traversed_list == [0, 1, 2, 4, 5, 6]
+    assert new_node.parent is binary_search_tree.root
+    assert binary_search_tree.root.right is new_node
+    assert new_node.left is new_child_node
+    assert new_child_node.parent is new_node
+
+
+def test_delete_root_node_leftmost_rightsubtree_child_with_right_child():
+    binary_search_tree = BinarySearchTree()
+    binary_search_tree.insert(1)
+    binary_search_tree.insert(0)
+    binary_search_tree.insert(4)
+    binary_search_tree.insert(2)
+    binary_search_tree.insert(3)
+    binary_search_tree.insert(5)
+    node = binary_search_tree.search(1)
+    binary_search_tree.delete(node)
+    traversed_list = []
+    action = lambda node: traversed_list.append(node.value)
+    binary_search_tree.traverse(action)
     new_node = binary_search_tree.search(2)
     new_child_node = binary_search_tree.search(0)
-    assert traversed_list == [0, 1, 2, 4, 5, 6]
+    assert traversed_list == [0, 2, 3, 4, 5]
     assert new_node is binary_search_tree.root
     assert new_node.parent is None
     assert new_node.left is new_child_node
     assert new_child_node.parent is new_node
 
 
-def test_delete_root_node_leftmost_rightsubtree_child_with_right_child():
-    pass
-
-
 def test_delete_lone_leftmost_rightsubtree_child_with_right_child():
-    pass
+    binary_search_tree = BinarySearchTree()
+    binary_search_tree.insert(1)
+    binary_search_tree.insert(0)
+    binary_search_tree.insert(3)
+    binary_search_tree.insert(2)
+    binary_search_tree.insert(6)
+    binary_search_tree.insert(4)
+    binary_search_tree.insert(5)
+    binary_search_tree.insert(7)
+    node = binary_search_tree.search(3)
+    binary_search_tree.delete(node)
+    traversed_list = []
+    action = lambda node: traversed_list.append(node.value)
+    binary_search_tree.traverse(action)
+    new_node = binary_search_tree.search(4)
+    new_left_child_node = binary_search_tree.search(2)
+    new_right_child_node = binary_search_tree.search(6)
+    new_left_of_right_child_node = binary_search_tree.search(5)
+    assert traversed_list == [0, 1, 2, 4, 5, 6, 7]
+    assert new_node.parent is binary_search_tree.root
+    assert binary_search_tree.root.right is new_node
+    assert new_node.left is new_left_child_node
+    assert new_left_child_node.parent is new_node
+    assert new_node.right is new_right_child_node
+    assert new_right_child_node.parent is new_node
+    assert new_right_child_node.left is new_left_of_right_child_node
+    assert new_left_of_right_child_node.parent is new_right_child_node
