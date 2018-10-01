@@ -13,6 +13,8 @@ class BinarySearchTreeNode:
 class BinarySearchTree:
     def __init__(self):
         self.root = None
+        self._min = None
+        self._max = None
 
     def search(self, value) -> BinarySearchTreeNode:
         """search in O(log h)"""
@@ -24,7 +26,7 @@ class BinarySearchTree:
         raise FileNotFoundError
 
     def min(self) -> BinarySearchTreeNode:
-        """O(h)"""
+        """O(log h)"""
         node = self.root
         if not node:
             return None
@@ -33,7 +35,7 @@ class BinarySearchTree:
         return node
 
     def max(self) -> BinarySearchTreeNode:
-        """O(h)"""
+        """O(log h)"""
         node = self.root
         if not node:
             return None
