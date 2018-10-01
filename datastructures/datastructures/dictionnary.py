@@ -64,10 +64,10 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
     def delete(self, item: Item):
         """O(n)"""
         if self._top is not None:
-            if self._container[item.index] is item:
-                self._container[item.index] = self._container[self._top]
-                self._top = self._top - 1 if self._top else None
-                return
+            self._container[item.index] = self._container[self._top]
+            self._container[item.index].index = item.index
+            self._top = self._top - 1 if self._top else None
+            return
 
     def max(self) -> Item:
         """O(n)"""
@@ -76,7 +76,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             max_key = -inf
             max_item = None
             i = 0
-            while i < self._top + 1:
+            for i in range(self._top + 1):
                 item = self._container[i]
                 if item.key > max_key:
                     max_item, max_key = item, item.key
@@ -90,7 +90,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             min_key = inf
             min_item = None
             i = 0
-            while i < self._top + 1:
+            for i in range(self._top + 1):
                 item = self._container[i]
                 if item.key < min_key:
                     min_item, min_key = item, item.key
@@ -99,31 +99,27 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
 
     def predecessor(self, item: Item) -> Item:
         """O(n)"""
-        if self._top is not None:
-            key = item.key
-            predecessor = None
-            predecessor_key = -inf
-            for i in range(self._top + 1):
-                current_item = self._container[i]
-                current_key = current_item.key
-                if predecessor_key < current_key < key:
-                    predecessor, predecessor_key = current_item, current_key
-            return predecessor
-        return None
+        key = item.key
+        predecessor = None
+        predecessor_key = -inf
+        for i in range(self._top + 1):
+            current_item = self._container[i]
+            current_key = current_item.key
+            if predecessor_key < current_key < key:
+                predecessor, predecessor_key = current_item, current_key
+        return predecessor
 
     def successor(self, item: Item) -> Item:
         """O(n)"""
-        if self._top is not None:
-            key = item.key
-            successor = None
-            successor_key = inf
-            for i in range(self._top + 1):
-                current_item = self._container[i]
-                current_key = current_item.key
-                if successor_key > current_key > key:
-                    successor, successor_key = current_item, current_key
-            return successor
-        return None
+        key = item.key
+        successor = None
+        successor_key = inf
+        for i in range(self._top + 1):
+            current_item = self._container[i]
+            current_key = current_item.key
+            if successor_key > current_key > key:
+                successor, successor_key = current_item, current_key
+        return successor
 
 
 class SortedArrayBasedDictionnary(BaseDictionnary):
