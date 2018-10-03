@@ -4,7 +4,7 @@ from .item import Item
 from datastructures import Stack, StackEmptyError, Queue
 
 
-def mergesort(items: Sequence[Item], order=None) -> Sequence[Item]:
+def mergesort(items: Sequence[Item], order=None) -> None:
     """O(n*log n)"""
     comp = lambda x, y: x > y if order == 'max' else x < y
     stack = Stack(implementation='linked_list')
