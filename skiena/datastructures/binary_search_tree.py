@@ -52,7 +52,7 @@ class BinarySearchTree:
                 self.node = node
                 self.status = status
         stack_item = StackItem(self.root, 0)
-        while stack_item:
+        while True:
             if stack_item.node:
                 if not stack_item.status:
                     stack.push(stack_item)
@@ -64,7 +64,7 @@ class BinarySearchTree:
             try:
                 stack_item = stack.pop()
             except StackEmptyError:
-                stack_item = None
+                break
 
     def insert(self, value, content=None):
         """O(h)"""

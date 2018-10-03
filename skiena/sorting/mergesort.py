@@ -1,13 +1,14 @@
 from typing import Sequence
 from .item import Item
 
-from datastructures import Stack, Queue
+from datastructures import Stack, StackEmptyError, Queue
 
 
 def mergesort(items: Sequence[Item], order=None) -> Sequence[Item]:
     """O(n*log n)"""
     comp = lambda x, y: x > y if order == 'max' else x < y
     stack = Stack(implementation='linked_list')
+
     class StackItem:
         def __init__(self, low, high, status=0):
             self.low = low
@@ -16,7 +17,7 @@ def mergesort(items: Sequence[Item], order=None) -> Sequence[Item]:
 
     stack_item = StackItem(0, len(items) - 1)
 
-    while stack_item:
+    while True:
         low = stack_item.low
         high = stack_item.high
         if low != high:
@@ -34,16 +35,22 @@ def mergesort(items: Sequence[Item], order=None) -> Sequence[Item]:
             else:
                 # merge
                 left_queue = Queue(implementation='doubly_linked_list')
+                for i in range(low, median+1):
+                    left_queue.enqueue(items[i])
                 right_queue = Queue(implementation='doubly_linked_list')
+                for i in range(median+1, high+1):
+                    right_queue.enqueue(items[i])
                 for i in range(low, high + 1):
                     if not left_queue.head:
-                        items[i] = right_queue.dequeue
+                        items[i] = right_queue.dequeue()
                     elif not right_queue.head:
-                        items[i] = left_queue.dequeue
+                        items[i] = left_queue.dequeue()
                     else:
                         if comp(left_queue.head.key, right_queue.head.key):
-                            items[i] = left_queue.dequeue
+                            items[i] = left_queue.dequeue()
                         else:
-                            items[i] = right_queue.dequeue
-        stack_item = stack.pop()
-    return items
+                            items[i] = right_queue.dequeue()
+        try:
+            stack_item = stack.pop()
+        except StackEmptyError:
+            break
