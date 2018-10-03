@@ -6,6 +6,14 @@ class QueueEmptyError(Exception):
 
 
 class BaseQueue:
+    @property
+    def head(self):
+        raise NotImplementedError
+
+    @property
+    def tail(self):
+        raise NotImplementedError
+
     def enqueue(self, item):
         raise NotImplementedError
 
@@ -20,18 +28,30 @@ class ArrayBasedQueue(BaseQueue):
         self._first = None
         self._last = None
 
+    @property
+    def head(self):
+        if self._first is None or self._first > self._last:
+            return None
+        return self._container[self._first]
+
+    @property
+    def tail(self):
+        if self._first is None or self._first > self._last:
+            return None
+        return self._container[self._last]
+
     def enqueue(self, item):
-        self._last = self._last + 1 if self._last is not None else 0
-        self._container[self._last] = item
-        # if first item to be enqueued
         if self._first is None:
-            self._first = 0
+            self._first = self._last = 0
+            self._container[0] = item
+            return
+        self._last = self._last + 1
+        self._container[self._last] = item
 
     def dequeue(self):
-        if (self._first is not None
-           and self._first <= self._last):
+        if self._first is not None:
             item = self._container[self._first]
-            self._first += 1
+            self._first = self._first + 1 if self._first < self._last else None
             return item
         raise QueueEmptyError
 
@@ -40,6 +60,14 @@ class DoublyLinkedListBasedQueue(BaseQueue):
     """Queue implementation based on linked list"""
     def __init__(self):
         self._container = DoublyLinkedList()
+
+    @property
+    def head(self):
+        return self._container.last.item if self._container.last else None
+
+    @property
+    def tail(self):
+        return self._container.first.item if self._container.first else None
 
     def enqueue(self, item):
         self._container.insert(item)
@@ -67,6 +95,14 @@ class Queue:
         else:
             self._queue = BaseQueue()
         self.implementation = implementation
+
+    @property
+    def head(self):
+        return self._queue.head
+
+    @property
+    def tail(self):
+        return self._queue.tail
 
     def enqueue(self, item):
         self._queue.enqueue(item)
