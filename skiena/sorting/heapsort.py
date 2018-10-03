@@ -1,12 +1,7 @@
 from typing import Sequence, List
+from .item import Item
 
 from datastructures import Heap
-
-
-class Item:
-    def __init__(self, key: int, content=None):
-        self.key = key
-        self.content = content
 
 
 def heapsort(items: Sequence[Item], order=None) -> List[Item]:
