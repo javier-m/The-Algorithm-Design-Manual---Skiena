@@ -11,6 +11,12 @@ class LinkedList:
         self.first = None
         self.last = None
 
+    def __iter__(self):
+        node = self.first
+        while node:
+            yield node.item
+            node = node.next
+
     def search(self, item):
         """search in O(n)"""
         node = self.first

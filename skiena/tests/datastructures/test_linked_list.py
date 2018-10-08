@@ -66,3 +66,13 @@ def test_delete_fail():
         linked_list.insert(i)
     with pytest.raises(FileNotFoundError):
         linked_list.delete('d')
+
+
+def test_iterate():
+    linked_list = LinkedList()
+    for i in 'abc':
+        linked_list.insert(i)
+    j = -1
+    for i in linked_list:
+        j += 1
+        assert i == 'abc'[::-1][j]
