@@ -92,6 +92,7 @@ class Graph:
                  directed: bool=False):
         self.nb_vertices = len(vertices)
         self.nb_edges = len(edges) if directed else 2*len(edges)
+        self.directed = directed
         # create nodelists
         self.adjacency_lists = NodeList(vertices=vertices)
         for vertex in vertices:

@@ -93,3 +93,24 @@ def test_iter_nodelist():
     set_of_vertices = {v for v in vertices}
     set_of_iterated_vertices = {v for v in nodelist}
     assert set_of_vertices == set_of_iterated_vertices
+
+
+def test_bfs():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[0], vertices[4]),
+        Edge(vertices[0], vertices[5]),
+        Edge(vertices[1], vertices[2]),
+        Edge(vertices[1], vertices[4]),
+        Edge(vertices[2], vertices[3]),
+        Edge(vertices[3], vertices[4]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    graph.bfs(start=vertices[0])
+    assert graph.parents[vertices[0]] is None
+    assert graph.parents[vertices[1]] is vertices[0]
+    assert graph.parents[vertices[2]] is vertices[1]
+    assert graph.parents[vertices[3]] is vertices[4]
+    assert graph.parents[vertices[4]] is vertices[0]
+    assert graph.parents[vertices[5]] is vertices[0]
