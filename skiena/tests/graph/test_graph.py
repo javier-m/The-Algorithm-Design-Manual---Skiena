@@ -108,12 +108,12 @@ def test_undirected_bfs():
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     graph.bfs(start=vertices[0])
-    assert graph.parents[vertices[0]] is None
-    assert graph.parents[vertices[1]] is vertices[0]
-    assert graph.parents[vertices[2]] is vertices[1]
-    assert graph.parents[vertices[3]] is vertices[4]
-    assert graph.parents[vertices[4]] is vertices[0]
-    assert graph.parents[vertices[5]] is vertices[0]
+    assert graph.parent_edges[vertices[0]] is None
+    assert graph.parent_edges[vertices[1]].start is vertices[0]
+    assert graph.parent_edges[vertices[2]].start is vertices[1]
+    assert graph.parent_edges[vertices[3]].start is vertices[4]
+    assert graph.parent_edges[vertices[4]].start is vertices[0]
+    assert graph.parent_edges[vertices[5]].start is vertices[0]
 
 
 def test_directed_bfs():
@@ -128,12 +128,12 @@ def test_directed_bfs():
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=True)
     graph.bfs(start=vertices[0])
-    assert graph.parents[vertices[0]] is None
-    assert graph.parents[vertices[1]] is vertices[0]
-    assert graph.parents[vertices[2]] is vertices[0]
-    assert graph.parents[vertices[3]] is vertices[1] or graph.parents[vertices[3]] is vertices[2]
-    assert graph.parents[vertices[4]] is vertices[3]
-    assert graph.parents[vertices[5]] is vertices[3]
+    assert graph.parent_edges[vertices[0]] is None
+    assert graph.parent_edges[vertices[1]].start is vertices[0]
+    assert graph.parent_edges[vertices[2]].start is vertices[0]
+    assert graph.parent_edges[vertices[3]].start is vertices[1] or graph.parent_edges[vertices[3]].start is vertices[2]
+    assert graph.parent_edges[vertices[4]].start is vertices[3]
+    assert graph.parent_edges[vertices[5]].start is vertices[3]
 
 
 def test_undirected_dfs():
@@ -148,17 +148,17 @@ def test_undirected_dfs():
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     graph.dfs(start=vertices[0])
-    assert graph.parents[vertices[0]] is None
-    if graph.parents[vertices[1]] is vertices[0]:
-        assert graph.parents[vertices[2]] is vertices[1]
-        assert graph.parents[vertices[3]] is vertices[2]
-        assert graph.parents[vertices[4]] is vertices[3]
+    assert graph.parent_edges[vertices[0]] is None
+    if graph.parent_edges[vertices[1]].start is vertices[0]:
+        assert graph.parent_edges[vertices[2]].start is vertices[1]
+        assert graph.parent_edges[vertices[3]].start is vertices[2]
+        assert graph.parent_edges[vertices[4]].start is vertices[3]
     else:
-        assert graph.parents[vertices[1]] is vertices[2]
-        assert graph.parents[vertices[2]] is vertices[3]
-        assert graph.parents[vertices[3]] is vertices[4]
-        assert graph.parents[vertices[4]] is vertices[0]
-    assert graph.parents[vertices[5]] is vertices[0]
+        assert graph.parent_edges[vertices[1]].start is vertices[2]
+        assert graph.parent_edges[vertices[2]].start is vertices[3]
+        assert graph.parent_edges[vertices[3]].start is vertices[4]
+        assert graph.parent_edges[vertices[4]].start is vertices[0]
+    assert graph.parent_edges[vertices[5]].start is vertices[0]
 
 
 def test_directed_dfs():
@@ -173,9 +173,53 @@ def test_directed_dfs():
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=True)
     graph.dfs(start=vertices[0])
-    assert graph.parents[vertices[0]] is None
-    assert graph.parents[vertices[1]] is vertices[0]
-    assert graph.parents[vertices[2]] is vertices[0]
-    assert graph.parents[vertices[3]] is vertices[1] or graph.parents[vertices[3]] is vertices[2]
-    assert graph.parents[vertices[4]] is vertices[3]
-    assert graph.parents[vertices[5]] is vertices[3]
+    assert graph.parent_edges[vertices[0]] is None
+    assert graph.parent_edges[vertices[1]].start is vertices[0]
+    assert graph.parent_edges[vertices[2]].start is vertices[0]
+    assert graph.parent_edges[vertices[3]].start is vertices[1] or graph.parent_edges[vertices[3]].start is vertices[2]
+    assert graph.parent_edges[vertices[4]].start is vertices[3]
+    assert graph.parent_edges[vertices[5]].start is vertices[3]
+
+
+def test_path_finder():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[0], vertices[4]),
+        Edge(vertices[0], vertices[5]),
+        Edge(vertices[1], vertices[2]),
+        Edge(vertices[1], vertices[4]),
+        Edge(vertices[2], vertices[3]),
+        Edge(vertices[3], vertices[4]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=True)
+    graph.bfs(start=vertices[0])
+    path = graph.find_path(start=vertices[0], end=vertices[2])
+
+    class PathLogger:
+        def __init__(self):
+            self.path = []
+
+        def __call__(self, vertex: Vertex):
+            self.path.append(vertex)
+
+    path_logger = PathLogger()
+    path.bfs(start=vertices[0], process_vertex_early=path_logger)
+    for i in range(3):
+        assert path_logger.path[i] is vertices[i]
+
+
+def test_path_finder_fail():
+    vertices = [Vertex() for i in range(4)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[1], vertices[2]),
+        Edge(vertices[2], vertices[0]),
+        Edge(vertices[2], vertices[3]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=True)
+    graph.bfs(start=vertices[0])
+    with pytest.raises(Exception):
+        graph.find_path(start=vertices[3], end=vertices[1])
+
+

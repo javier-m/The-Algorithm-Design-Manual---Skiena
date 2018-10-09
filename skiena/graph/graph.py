@@ -102,12 +102,43 @@ class Graph:
         self.adjacency_lists = NodeList(vertices=vertices)
         for vertex in vertices:
             self.adjacency_lists[vertex] = AdjacencyList(start=vertex)
-        self.parents = NodeList(vertices=vertices)
+        self.parent_edges = NodeList(vertices=vertices)
         # build adjacency lists
         for edge in edges:
             self.adjacency_lists[edge.start].connect(edge)
             if not directed:
                 self.adjacency_lists[edge.end].connect(edge)
+
+    def find_path(self, start: Vertex, end: Vertex):
+        """return the path from start to end vertices as a graph"""
+        vertice_stack = Stack(implementation='linked_list')
+        edge_stack = Stack(implementation='linked_list')
+        for i in range(self.nb_vertices):
+            vertice_stack.push(end)
+            if end is start:
+                break
+            edge = self.parent_edges[end]
+            if edge:
+                edge_stack.push(edge)
+                end = edge.start
+            else:
+                raise Exception(f'No path found between {start} and {end}')
+        else:
+            raise Exception(f'No path found between {start} and {end}')
+        vertices = []
+        while True:
+            try:
+                vertices.append(vertice_stack.pop())
+            except StackEmptyError:
+                break
+        edges = []
+        while True:
+            try:
+                edges.append(edge_stack.pop())
+            except StackEmptyError:
+                break
+
+        return Graph(vertices=vertices, edges=edges, directed=True)
 
     def bfs(self,
             start: Vertex,
@@ -115,11 +146,12 @@ class Graph:
             process_vertex_late: Callable[[Vertex], Any]=None,
             process_edge: Callable[[Edgenode], Any]=None):
         """Breadth-First Search
-        returns the graph of processed vertices"""
+        returns the graph of processed vertices - one single connected component"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
         process_edge = process_edge if process_edge else lambda v1, v2: None
         vertices = [v for v in self.adjacency_lists]
+        self.parent_edges = NodeList(vertices=vertices)  # reinit parents
         discovered = NodeList(vertices=vertices)
         processed = NodeList(vertices=vertices)
         discovered[start] = True
@@ -139,7 +171,10 @@ class Graph:
                     process_edge(vertex, next_vertex)
                 if not discovered[next_vertex]:
                     discovered[next_vertex] = True
-                    self.parents[next_vertex] = vertex
+                    self.parent_edges[next_vertex] = Edge(start=vertex,
+                                                          end=next_vertex,
+                                                          weight=edgenode.weight,
+                                                          **edgenode._kwargs)
                     queue.enqueue(next_vertex)
             process_vertex_late(vertex)
         processed_vertices = [v for v in processed if processed[v]]
@@ -167,6 +202,7 @@ class Graph:
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
         process_edge = process_edge if process_edge else lambda v1, v2: None
         vertices = [v for v in self.adjacency_lists]
+        self.parent_edges = NodeList(vertices=vertices)  # reinit parents
         discovered = NodeList(vertices=vertices)  # added to stack
         processed = NodeList(vertices=vertices)  # processed and out of stack
         discovered[start] = True
@@ -191,7 +227,8 @@ class Graph:
             if stack_item.status == 1:
                 while True:
                     try:
-                        next_vertex = next(stack_item.iter_edgenodes).end
+                        edgenode = next(stack_item.iter_edgenodes)
+                        next_vertex = edgenode.end
                     except StopIteration:
                         stack_item.status = 2
                         stack.push(stack_item)
@@ -200,7 +237,10 @@ class Graph:
                     if not discovered[next_vertex]:
                         discovered[next_vertex] = True
                         stack.push(stack_item)
-                        self.parents[next_vertex] = stack_item.vertex
+                        self.parent_edges[next_vertex] = Edge(start=stack_item.vertex,
+                                                              end=next_vertex,
+                                                              weight=edgenode.weight,
+                                                              **edgenode._kwargs)
                         process_edge(stack_item.vertex, next_vertex)
                         stack.push(StackItem(vertex=next_vertex))
                         break
