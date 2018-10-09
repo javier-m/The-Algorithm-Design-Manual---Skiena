@@ -1,4 +1,4 @@
-from typing import Sequence, Callable, Any
+from typing import Sequence, Callable, Any, Tuple
 
 from datastructures import LinkedList, Queue, QueueEmptyError
 
@@ -46,6 +46,7 @@ class Edgenode:
             raise Exception('Starting vertex not in this edge')
         self.end = end
         self.weight = edge.weight
+        self._kwargs = edge._kwargs
         for kwarg, value in edge._kwargs.items():
             setattr(self, kwarg, value)
 
@@ -109,6 +110,8 @@ class Graph:
             process_vertex_early: Callable[[Vertex], Any]=None,
             process_vertex_late: Callable[[Vertex], Any]=None,
             process_edge: Callable[[Edgenode], Any]=None):
+        """Breadth-First Search
+        returns the graph of processed vertices"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
         process_edge = process_edge if process_edge else lambda v1, v2: None
@@ -135,5 +138,18 @@ class Graph:
                     self.parents[next_vertex] = vertex
                     queue.enqueue(next_vertex)
             process_vertex_late(vertex)
-
+        processed_vertices = [v for v in processed if processed[v]]
+        processed_edges = []
+        for processed_vertex in processed_vertices:
+            adjacency_list = self.adjacency_lists[processed_vertex]
+            for edgenode in adjacency_list.connected_vertices:
+                processed_edges.append(
+                    Edge(start=processed_vertex,
+                         end=edgenode.end,
+                         weight=edgenode.weight,
+                         **edgenode._kwargs)
+                    )
+        return Graph(vertices=processed_vertices,
+                     edges=processed_edges,
+                     directed=self.directed)
 
