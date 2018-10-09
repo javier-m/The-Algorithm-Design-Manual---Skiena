@@ -1,6 +1,10 @@
-from typing import Sequence, Callable, Any, Tuple
+from typing import Sequence, Callable, Any
 
-from datastructures import LinkedList, Queue, QueueEmptyError
+from datastructures import (LinkedList,
+                            Queue,
+                            QueueEmptyError,
+                            Stack,
+                            StackEmptyError)
 
 
 class Vertex:
@@ -153,3 +157,75 @@ class Graph:
                      edges=processed_edges,
                      directed=self.directed)
 
+    def dfs(self,
+            start: Vertex,
+            process_vertex_early: Callable[[Vertex], Any]=None,
+            process_vertex_late: Callable[[Vertex], Any]=None,
+            process_edge: Callable[[Edgenode], Any]=None):
+        """Depth-First Search"""
+        process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
+        process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
+        process_edge = process_edge if process_edge else lambda v1, v2: None
+        vertices = [v for v in self.adjacency_lists]
+        discovered = NodeList(vertices=vertices)  # added to stack
+        processed = NodeList(vertices=vertices)  # processed and out of stack
+        discovered[start] = True
+        stack = Stack(implementation='linked_list')
+
+        class StackItem:
+            def __init__(self, vertex: Vertex, status=0, iter_edgenodes=None):
+                self.vertex = vertex
+                self.status = status
+                self.iter_edgenodes = iter_edgenodes
+
+        stack.push(StackItem(vertex=start))
+        while True:
+            try:
+                stack_item = stack.pop()
+            except StackEmptyError:
+                break
+            if not stack_item.status:
+                stack_item.iter_edgenodes = iter(self.adjacency_lists[stack_item.vertex].connected_vertices)
+                process_vertex_early(stack_item.vertex)
+                stack_item.status = 1
+            if stack_item.status == 1:
+                while True:
+                    try:
+                        next_vertex = next(stack_item.iter_edgenodes).end
+                    except StopIteration:
+                        stack_item.status = 2
+                        stack.push(stack_item)
+                        break
+                    # if undiscovered vertex: add it to stack
+                    if not discovered[next_vertex]:
+                        discovered[next_vertex] = True
+                        stack.push(stack_item)
+                        self.parents[next_vertex] = stack_item.vertex
+                        process_edge(stack_item.vertex, next_vertex)
+                        stack.push(StackItem(vertex=next_vertex))
+                        break
+                    # if discovered vertex, then it has been put in stack before
+                    # if it is still unprocessed, then it is still in the stack, so no need to add it
+                    # if it has been processed but the graph is directed, the edge has not been processed yet
+                    # in both case, the edge needs to be processed
+                    # but it is a "back edge", the parent of the next_vertex is already known
+                    elif not processed[next_vertex] or self.directed:
+                        process_edge(stack_item.vertex, next_vertex)
+            elif stack_item.status == 2:
+                process_vertex_late(stack_item.vertex)
+                processed[stack_item.vertex] = True
+
+        processed_vertices = [v for v in processed if processed[v]]
+        processed_edges = []
+        for processed_vertex in processed_vertices:
+            adjacency_list = self.adjacency_lists[processed_vertex]
+            for edgenode in adjacency_list.connected_vertices:
+                processed_edges.append(
+                    Edge(start=processed_vertex,
+                         end=edgenode.end,
+                         weight=edgenode.weight,
+                         **edgenode._kwargs)
+                    )
+        return Graph(vertices=processed_vertices,
+                     edges=processed_edges,
+                     directed=self.directed)

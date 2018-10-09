@@ -95,7 +95,7 @@ def test_iter_nodelist():
     assert set_of_vertices == set_of_iterated_vertices
 
 
-def test_bfs():
+def test_undirected_bfs():
     vertices = [Vertex() for i in range(6)]
     edges = [
         Edge(vertices[0], vertices[1]),
@@ -114,3 +114,68 @@ def test_bfs():
     assert graph.parents[vertices[3]] is vertices[4]
     assert graph.parents[vertices[4]] is vertices[0]
     assert graph.parents[vertices[5]] is vertices[0]
+
+
+def test_directed_bfs():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[0], vertices[2]),
+        Edge(vertices[1], vertices[3]),
+        Edge(vertices[2], vertices[3]),
+        Edge(vertices[3], vertices[4]),
+        Edge(vertices[3], vertices[5]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=True)
+    graph.bfs(start=vertices[0])
+    assert graph.parents[vertices[0]] is None
+    assert graph.parents[vertices[1]] is vertices[0]
+    assert graph.parents[vertices[2]] is vertices[0]
+    assert graph.parents[vertices[3]] is vertices[1] or graph.parents[vertices[3]] is vertices[2]
+    assert graph.parents[vertices[4]] is vertices[3]
+    assert graph.parents[vertices[5]] is vertices[3]
+
+
+def test_undirected_dfs():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[0], vertices[4]),
+        Edge(vertices[0], vertices[5]),
+        Edge(vertices[1], vertices[2]),
+        Edge(vertices[2], vertices[3]),
+        Edge(vertices[3], vertices[4]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    graph.dfs(start=vertices[0])
+    assert graph.parents[vertices[0]] is None
+    if graph.parents[vertices[1]] is vertices[0]:
+        assert graph.parents[vertices[2]] is vertices[1]
+        assert graph.parents[vertices[3]] is vertices[2]
+        assert graph.parents[vertices[4]] is vertices[3]
+    else:
+        assert graph.parents[vertices[1]] is vertices[2]
+        assert graph.parents[vertices[2]] is vertices[3]
+        assert graph.parents[vertices[3]] is vertices[4]
+        assert graph.parents[vertices[4]] is vertices[0]
+    assert graph.parents[vertices[5]] is vertices[0]
+
+
+def test_directed_dfs():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(vertices[0], vertices[1]),
+        Edge(vertices[0], vertices[2]),
+        Edge(vertices[1], vertices[3]),
+        Edge(vertices[2], vertices[3]),
+        Edge(vertices[3], vertices[4]),
+        Edge(vertices[3], vertices[5]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=True)
+    graph.dfs(start=vertices[0])
+    assert graph.parents[vertices[0]] is None
+    assert graph.parents[vertices[1]] is vertices[0]
+    assert graph.parents[vertices[2]] is vertices[0]
+    assert graph.parents[vertices[3]] is vertices[1] or graph.parents[vertices[3]] is vertices[2]
+    assert graph.parents[vertices[4]] is vertices[3]
+    assert graph.parents[vertices[5]] is vertices[3]
