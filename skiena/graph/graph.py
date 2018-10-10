@@ -1,4 +1,5 @@
-from typing import Sequence, Callable, Any, Tuple
+from typing import Sequence, Callable, Any
+from enum import Enum
 
 from datastructures import (LinkedList,
                             Queue,
@@ -25,11 +26,19 @@ class Vertex:
         return vertex_repr + ' ' + kwargs_repr if kwargs_repr else vertex_repr
 
 
+class EdgeType(Enum):
+    TREE = 1
+    BACK = 2
+    FORWARD = 3
+    CROSS = 4
+
+
 class Edge:
-    def __init__(self, start: Vertex, end: Vertex, weight: float=None, **kwargs):
+    def __init__(self, start: Vertex, end: Vertex, weight: float=None, edgetype: EdgeType=None, **kwargs):
         self.start = start
         self.end = end
         self.weight = weight
+        self.edgetype = edgetype
         self._kwargs = kwargs
         for kwarg, value in kwargs.items():
             setattr(self, kwarg, value)
@@ -50,6 +59,7 @@ class Edgenode:
             raise Exception('Starting vertex not in this edge')
         self.end = end
         self.weight = edge.weight
+        self.edgetype = edge.edgetype
         self._kwargs = edge._kwargs
         for kwarg, value in edge._kwargs.items():
             setattr(self, kwarg, value)
@@ -144,17 +154,21 @@ class Graph:
             start: Vertex,
             process_vertex_early: Callable[[Vertex], Any]=None,
             process_vertex_late: Callable[[Vertex], Any]=None,
-            process_edge: Callable[[Edgenode], Any]=None):
+            process_edge: Callable[[Vertex, Edgenode], Any]=None,
+            discovered_vertices: NodeList=None,
+            processed_vertices: NodeList=None):
         """Breadth-First Search
         returns the graph of processed vertices - one single connected component"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
-        process_edge = process_edge if process_edge else lambda v1, v2: None
+        process_edge = process_edge if process_edge else lambda v, e: None
+
         vertices = [v for v in self.adjacency_lists]
         self.parent_edges = NodeList(vertices=vertices)  # reinit parents
-        discovered = NodeList(vertices=vertices)
-        processed = NodeList(vertices=vertices)
+        discovered = NodeList(vertices=vertices) if discovered_vertices is None else discovered_vertices  # added to stack
+        processed = NodeList(vertices=vertices) if processed_vertices is None else processed_vertices  # processed and out of stack
         discovered[start] = True
+
         queue = Queue(implementation='doubly_linked_list')
         queue.enqueue(start)
         while True:
@@ -168,12 +182,13 @@ class Graph:
             for edgenode in adjacency_list.connected_vertices:
                 next_vertex = edgenode.end
                 if not processed[next_vertex] or self.directed:
-                    process_edge(vertex, next_vertex)
+                    process_edge(vertex, edgenode)
                 if not discovered[next_vertex]:
                     discovered[next_vertex] = True
                     self.parent_edges[next_vertex] = Edge(start=vertex,
                                                           end=next_vertex,
                                                           weight=edgenode.weight,
+                                                          edgetype=edgenode.edgetype,
                                                           **edgenode._kwargs)
                     queue.enqueue(next_vertex)
             process_vertex_late(vertex)
@@ -196,7 +211,9 @@ class Graph:
             start: Vertex,
             process_vertex_early: Callable[[Vertex], Any]=None,
             process_vertex_late: Callable[[Vertex], Any]=None,
-            process_edge: Callable[[Edgenode], Any]=None) -> NodeList:
+            process_edge: Callable[[Vertex, Edgenode], Any]=None,
+            discovered_vertices: NodeList=None,
+            processed_vertices: NodeList=None) -> NodeList:
         """Depth-First Search
         returns entry and exit times for each vertex
         - a vertex v1 is an ancestor of vertex v2 if the time interval of v2 is
@@ -204,12 +221,12 @@ class Graph:
         - the nb of descendants of a vertex v1 is half its time interval"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
-        process_edge = process_edge if process_edge else lambda v1, v2: None
+        process_edge = process_edge if process_edge else lambda v, e: None
 
         vertices = [v for v in self.adjacency_lists]
         self.parent_edges = NodeList(vertices=vertices)  # reinit parents
-        discovered = NodeList(vertices=vertices)  # added to stack
-        processed = NodeList(vertices=vertices)  # processed and out of stack
+        discovered = NodeList(vertices=vertices) if discovered_vertices is None else discovered_vertices  # added to stack
+        processed = NodeList(vertices=vertices) if processed_vertices is None else processed_vertices  # processed and out of stack
         discovered[start] = True
 
         class StackTime:
@@ -253,11 +270,16 @@ class Graph:
                     if not discovered[next_vertex]:
                         discovered[next_vertex] = True
                         stack.push(stack_item)
+                        # tree edge
+                        edgenode.edgetype = EdgeType.TREE
+                        # the parent of the next_vertex is the head of the edge,
+                        # i.e., stack_item.vertex
                         self.parent_edges[next_vertex] = Edge(start=stack_item.vertex,
                                                               end=next_vertex,
                                                               weight=edgenode.weight,
+                                                              edgenode=edgenode.edgetype,
                                                               **edgenode._kwargs)
-                        process_edge(stack_item.vertex, next_vertex)
+                        process_edge(stack_item.vertex, edgenode)
                         stack.push(StackItem(vertex=next_vertex))
                         break
                     # if discovered vertex, then it has been put in stack before
@@ -266,7 +288,16 @@ class Graph:
                     # in both case, the edge needs to be processed
                     # but it is a "back edge", the parent of the next_vertex is already known
                     elif not processed[next_vertex] or self.directed:
-                        process_edge(stack_item.vertex, next_vertex)
+                        # discovered but not processed
+                        if not processed[next_vertex]:
+                            edgenode.edgetype = EdgeType.BACK
+                        # discovered, processed but earlier entry time
+                        elif entry_and_exit_times[stack_item.vertex].entry < entry_and_exit_times[next_vertex].entry:
+                            edgenode.edgetype = EdgeType.FORWARD
+                        # discovered, processed but later entry time
+                        else:
+                            edgenode.edgetype = EdgeType.CROSS
+                        process_edge(stack_item.vertex, edgenode)
             elif stack_item.status == 2:
                 process_vertex_late(stack_item.vertex)
                 processed[stack_item.vertex] = True
