@@ -52,19 +52,23 @@ def find_cycles(graph: Graph) -> Graph:
 
 
 class NotDAG(Exception):
-    """raised when a directed graph is detected as having a cycle"""
+    """raised when a directed graph is detected as having a cycle
+    or when it is an undirected graph"""
     pass
 
 
 def topological_sorting(graph: Graph) -> List:
     """DFS: returns the list of topologically-ordered vertices in a
     Directed Acyclic Graph (DAG)"""
+    if not graph.directed:
+        raise NotDAG
+
     vertices = [v for v in graph.adjacency_lists]
 
     stack = Stack(implementation='linked_list')
     discovered_vertices = NodeList(vertices, default=False)
     processed_vertices = NodeList(vertices, default=False)
-    ordered_vertices = []
+    sorted_vertices = []
 
     def process_vertex_early(vertex: Vertex):
         nonlocal discovered_vertices
@@ -91,8 +95,8 @@ def topological_sorting(graph: Graph) -> List:
 
     while True:
         try:
-            ordered_vertices = stack.pop()
+            sorted_vertices.append(stack.pop())
         except StackEmptyError:
             break
 
-    return ordered_vertices
+    return sorted_vertices
