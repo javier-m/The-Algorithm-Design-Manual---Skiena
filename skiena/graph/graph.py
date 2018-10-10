@@ -1,4 +1,4 @@
-from typing import Sequence, Callable, Any
+from typing import Sequence, Callable, Any, Tuple
 
 from datastructures import (LinkedList,
                             Queue,
@@ -196,17 +196,28 @@ class Graph:
             start: Vertex,
             process_vertex_early: Callable[[Vertex], Any]=None,
             process_vertex_late: Callable[[Vertex], Any]=None,
-            process_edge: Callable[[Edgenode], Any]=None):
-        """Depth-First Search"""
+            process_edge: Callable[[Edgenode], Any]=None) -> NodeList:
+        """Depth-First Search
+        returns entry and exit times for each vertex
+        - a vertex v1 is an ancestor of vertex v2 if the time interval of v2 is
+        nested in the one of v1
+        - the nb of descendants of a vertex v1 is half its time interval"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
         process_edge = process_edge if process_edge else lambda v1, v2: None
+
         vertices = [v for v in self.adjacency_lists]
         self.parent_edges = NodeList(vertices=vertices)  # reinit parents
         discovered = NodeList(vertices=vertices)  # added to stack
         processed = NodeList(vertices=vertices)  # processed and out of stack
         discovered[start] = True
-        stack = Stack(implementation='linked_list')
+
+        class StackTime:
+            def __init__(self, entry: int=None, exit: int=None):
+                self.entry = entry
+                self.exit = exit
+
+        entry_and_exit_times = NodeList(vertices=vertices, default=StackTime())
 
         class StackItem:
             def __init__(self, vertex: Vertex, status=0, iter_edgenodes=None):
@@ -214,13 +225,18 @@ class Graph:
                 self.status = status
                 self.iter_edgenodes = iter_edgenodes
 
+        stack = Stack(implementation='linked_list')
         stack.push(StackItem(vertex=start))
+
+        counter = 0
         while True:
             try:
                 stack_item = stack.pop()
             except StackEmptyError:
                 break
             if not stack_item.status:
+                entry_and_exit_times[stack_item.vertex] = StackTime(entry=counter)
+                counter += 1
                 stack_item.iter_edgenodes = iter(self.adjacency_lists[stack_item.vertex].connected_vertices)
                 process_vertex_early(stack_item.vertex)
                 stack_item.status = 1
@@ -254,18 +270,7 @@ class Graph:
             elif stack_item.status == 2:
                 process_vertex_late(stack_item.vertex)
                 processed[stack_item.vertex] = True
+                entry_and_exit_times[stack_item.vertex].exit = counter
+                counter += 1
 
-        processed_vertices = [v for v in processed if processed[v]]
-        processed_edges = []
-        for processed_vertex in processed_vertices:
-            adjacency_list = self.adjacency_lists[processed_vertex]
-            for edgenode in adjacency_list.connected_vertices:
-                processed_edges.append(
-                    Edge(start=processed_vertex,
-                         end=edgenode.end,
-                         weight=edgenode.weight,
-                         **edgenode._kwargs)
-                    )
-        return Graph(vertices=processed_vertices,
-                     edges=processed_edges,
-                     directed=self.directed)
+        return entry_and_exit_times

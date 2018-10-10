@@ -147,18 +147,28 @@ def test_undirected_dfs():
         Edge(vertices[3], vertices[4]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
-    graph.dfs(start=vertices[0])
+    entry_and_exit_times = graph.dfs(start=vertices[0])
     assert graph.parent_edges[vertices[0]] is None
+    assert (entry_and_exit_times[vertices[0]].entry, entry_and_exit_times[vertices[0]].exit) == (0, 11)
     if graph.parent_edges[vertices[1]].start is vertices[0]:
+        assert entry_and_exit_times[vertices[1]].exit - entry_and_exit_times[vertices[1]].entry == 7
         assert graph.parent_edges[vertices[2]].start is vertices[1]
+        assert entry_and_exit_times[vertices[2]].exit - entry_and_exit_times[vertices[2]].entry == 5
         assert graph.parent_edges[vertices[3]].start is vertices[2]
+        assert entry_and_exit_times[vertices[3]].exit - entry_and_exit_times[vertices[3]].entry == 3
         assert graph.parent_edges[vertices[4]].start is vertices[3]
+        assert entry_and_exit_times[vertices[4]].exit - entry_and_exit_times[vertices[4]].entry == 1
     else:
         assert graph.parent_edges[vertices[1]].start is vertices[2]
+        assert entry_and_exit_times[vertices[1]].exit - entry_and_exit_times[vertices[1]].entry == 1
         assert graph.parent_edges[vertices[2]].start is vertices[3]
+        assert entry_and_exit_times[vertices[2]].exit - entry_and_exit_times[vertices[2]].entry == 3
         assert graph.parent_edges[vertices[3]].start is vertices[4]
+        assert entry_and_exit_times[vertices[3]].exit - entry_and_exit_times[vertices[3]].entry == 5
         assert graph.parent_edges[vertices[4]].start is vertices[0]
+        assert entry_and_exit_times[vertices[4]].exit - entry_and_exit_times[vertices[4]].entry == 7
     assert graph.parent_edges[vertices[5]].start is vertices[0]
+    assert entry_and_exit_times[vertices[5]].exit - entry_and_exit_times[vertices[5]].entry == 1
 
 
 def test_directed_dfs():
@@ -172,13 +182,23 @@ def test_directed_dfs():
         Edge(vertices[3], vertices[5]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=True)
-    graph.dfs(start=vertices[0])
+    entry_and_exit_times = graph.dfs(start=vertices[0])
     assert graph.parent_edges[vertices[0]] is None
+    assert (entry_and_exit_times[vertices[0]].entry, entry_and_exit_times[vertices[0]].exit) == (0, 11)
     assert graph.parent_edges[vertices[1]].start is vertices[0]
     assert graph.parent_edges[vertices[2]].start is vertices[0]
     assert graph.parent_edges[vertices[3]].start is vertices[1] or graph.parent_edges[vertices[3]].start is vertices[2]
+    if graph.parent_edges[vertices[3]].start is vertices[1]:
+        assert (entry_and_exit_times[vertices[1]].entry, entry_and_exit_times[vertices[1]].exit) == (1, 8)
+        assert (entry_and_exit_times[vertices[2]].entry, entry_and_exit_times[vertices[2]].exit) == (9, 10)
+    else:
+        assert (entry_and_exit_times[vertices[2]].entry, entry_and_exit_times[vertices[2]].exit) == (1, 8)
+        assert (entry_and_exit_times[vertices[1]].entry, entry_and_exit_times[vertices[1]].exit) == (9, 10)
+    assert (entry_and_exit_times[vertices[3]].entry, entry_and_exit_times[vertices[3]].exit) == (2, 7)
     assert graph.parent_edges[vertices[4]].start is vertices[3]
+    assert entry_and_exit_times[vertices[4]].exit - entry_and_exit_times[vertices[4]].entry == 1    
     assert graph.parent_edges[vertices[5]].start is vertices[3]
+    assert entry_and_exit_times[vertices[5]].exit - entry_and_exit_times[vertices[5]].entry == 1
 
 
 def test_path_finder():
