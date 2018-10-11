@@ -1,4 +1,5 @@
 from .binary_search_tree import BinarySearchTree
+from .heap import Heap
 
 
 class Item:
@@ -133,6 +134,23 @@ class BalancedTreeBasedPriorityQueue(BasePriorityQueue):
                 self._min_item = None
 
 
+class HeapBasedPriorityQueue(BasePriorityQueue):
+    def __init__(self):
+        self._container = Heap(heaptype='min')
+
+    def insert(self, item: Item):
+        """O(log n)"""
+        self._container.insert(item=item)
+
+    def find_min(self) -> Item:
+        """O(1)"""
+        return self._container.find_root()
+
+    def delete_min(self):
+        """O(log n)"""
+        self._container.extract_root()
+
+
 class PriorityQueue:
     def __init__(self, implementation=None):
         if implementation == 'unsorted_array':
@@ -141,6 +159,8 @@ class PriorityQueue:
             self._priority_queue = SortedArrayBasedPriorityQueue()
         elif implementation == 'balanced_tree':
             self._priority_queue = BalancedTreeBasedPriorityQueue()
+        elif implementation == 'heap':
+            self._priority_queue = HeapBasedPriorityQueue()
         else:
             self._priority_queue = BasePriorityQueue()
         self.implementation = implementation

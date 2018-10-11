@@ -18,6 +18,12 @@ class Heap:
             self.heaptype = 'min'
             self._comp = lambda x, y: x < y
 
+    def find_root(self):
+        """O(1)"""
+        if self._top is None:
+            return None
+        return self._container[0]
+
     def extract_root(self) -> Item:
         if self._top is None:
             return None

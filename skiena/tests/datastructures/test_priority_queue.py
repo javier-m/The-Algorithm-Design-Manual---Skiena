@@ -132,3 +132,43 @@ def test_delete_balanced_tree():
     assert priority_queue.find_min() is None
     priority_queue.delete_min()
     assert priority_queue.find_min() is None
+
+
+def test_find_min_heap():
+    priority_queue = PriorityQueue(implementation='heap')
+    assert priority_queue.find_min() is None
+    item_4 = Item(4, 4)
+    item_2 = Item(2, 2)
+    item_3 = Item(3, 3)
+    item_1 = Item(1, 1)
+    priority_queue.insert(item_4)
+    assert priority_queue.find_min() is item_4
+    priority_queue.insert(item_2)
+    assert priority_queue.find_min() is item_2
+    priority_queue.insert(item_3)
+    assert priority_queue.find_min() is item_2
+    priority_queue.insert(item_1)
+    assert priority_queue.find_min() is item_1
+
+
+def test_delete_heap():
+    priority_queue = PriorityQueue(implementation='heap')
+    item_4 = Item(4, 4)
+    item_2 = Item(2, 2)
+    item_3 = Item(3, 3)
+    item_1 = Item(1, 1)
+    priority_queue.insert(item_4)
+    priority_queue.insert(item_2)
+    priority_queue.insert(item_3)
+    priority_queue.insert(item_1)
+    assert priority_queue.find_min() is item_1
+    priority_queue.delete_min()
+    assert priority_queue.find_min() is item_2
+    priority_queue.delete_min()
+    assert priority_queue.find_min() is item_3
+    priority_queue.delete_min()
+    assert priority_queue.find_min() is item_4
+    priority_queue.delete_min()
+    assert priority_queue.find_min() is None
+    priority_queue.delete_min()
+    assert priority_queue.find_min() is None
