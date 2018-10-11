@@ -1,41 +1,36 @@
 from math import inf
 
+from .keyed_item import KeyedItem
 from .linked_list import LinkedList, LinkedListNode
 from .doubly_linked_list import DoublyLinkedList, DoublyLinkedListNode
 from .binary_search_tree import BinarySearchTree
 
 
-class Item:
-    def __init__(self, key, content):
-        self.key = key
-        self.content = content
-
-
 class BaseDictionnary:
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """Given a search key, return a pointer to the element in dic-
         tionary self whose key value is k, if one exists."""
         raise NotImplementedError
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         raise NotImplementedError
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         raise NotImplementedError
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """retrieve item with the largest key"""
         raise NotImplementedError
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """retrieve item with the smallest key"""
         raise NotImplementedError
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """retrieve the item whose key is immediately before"""
         raise NotImplementedError
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """retrieve the item whose key is immediately after"""
         raise NotImplementedError
 
@@ -45,7 +40,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
         self._container = [None] * size
         self._top = None
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(n)"""
         if self._top is not None:
             for i in range(self._top + 1):
@@ -55,13 +50,13 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             raise FileNotFoundError
         raise FileNotFoundError
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(1)"""
         self._top = self._top + 1 if self._top is not None else 0
         item.index = self._top
         self._container[self._top] = item
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(n)"""
         if self._top is not None:
             self._container[item.index] = self._container[self._top]
@@ -69,7 +64,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             self._top = self._top - 1 if self._top else None
             return
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(n)"""
         from math import inf
         if self._top is not None:
@@ -83,7 +78,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             return max_item
         return None
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(n)"""
         from math import inf
         if self._top is not None:
@@ -97,7 +92,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
             return min_item
         return None
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         key = item.key
         predecessor = None
@@ -109,7 +104,7 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
                 predecessor, predecessor_key = current_item, current_key
         return predecessor
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         key = item.key
         successor = None
@@ -127,7 +122,7 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
         self._container = [None] * size
         self._top = None
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(log n)"""
         if self._top is not None:
             min_i = 0
@@ -152,7 +147,7 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
             raise FileNotFoundError
         raise FileNotFoundError
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(n)"""
         if self._top is not None:
             i = 0
@@ -173,33 +168,33 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
             self._container[0] = item
             item.index = 0
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(n)"""
         for i in range(item.index + 1, self._top + 1):
             self._container[i - 1] = self._container[i]
             self._container[i - 1].index = i - 1
         self._top = self._top - 1 if self._top else None
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(1)"""
         if self._top is not None:
             return self._container[self._top]
         return None
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(1)"""
         if self._top is not None:
             return self._container[0]
         return None
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
         index = item.index
         if index:
             return self._container[index - 1]
         return None
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
         index = item.index
         if index < self._top:
@@ -211,7 +206,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
     def __init__(self):
         self._container = LinkedList()
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(n)"""
         node = self._container.first
         while node:
@@ -220,11 +215,11 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
             node = node.next
         raise FileNotFoundError
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(1)"""
         self._container.insert(item)
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(n)"""
         key = item.key
         previous_node = None
@@ -240,7 +235,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         if not item_node.next:
             self._container.last = previous_node
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(n)"""
         from math import inf
         max_key = -inf
@@ -253,7 +248,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
             node = node.next
         return max_item
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(n)"""
         from math import inf
         min_key = inf
@@ -266,7 +261,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
             node = node.next
         return min_item
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         from math import inf
         key = item.key
@@ -280,8 +275,8 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
             current_node = current_node.next
         return predecessor.item if predecessor else None
 
-    def successor(self, item: Item) -> Item:
-        """O(n) - item is actually a node"""
+    def successor(self, item: KeyedItem) -> KeyedItem:
+        """O(n)"""
         from math import inf
         key = item.key
         successor = None
@@ -299,17 +294,17 @@ class DoublyUnsortedBasedDictionnary(BaseDictionnary):
     def __init__(self):
         self._container = DoublyLinkedList()
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(n)"""
         return SinglyUnsortedBasedDictionnary.search(self, key)
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(1)"""
         SinglyUnsortedBasedDictionnary.insert(self, item)
         item.node = self._container.first
 
-    def delete(self, item: Item):
-        """O(1) - item is actually a node"""
+    def delete(self, item: KeyedItem):
+        """O(1)"""
         previous_node, next_node = item.node.previous, item.node.next
         if previous_node:
             previous_node.next = next_node
@@ -320,19 +315,19 @@ class DoublyUnsortedBasedDictionnary(BaseDictionnary):
         else:
             self._container.last = previous_node
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(n)"""
         return SinglyUnsortedBasedDictionnary.max(self)
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(n)"""
         return SinglyUnsortedBasedDictionnary.min(self)
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         return SinglyUnsortedBasedDictionnary.predecessor(self, item)
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         return SinglyUnsortedBasedDictionnary.successor(self, item)
 
@@ -341,7 +336,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
     def __init__(self):
         self._container = LinkedList()
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(n)"""
         node = self._container.first
         while node:
@@ -350,7 +345,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
             node = node.next
         raise FileNotFoundError
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(n)"""
         key = item.key
         previous_node = None
@@ -368,7 +363,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
         if not current_node:
             self._container.last = inserted_node
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(n)"""
         item_predecessor = self.predecessor(item)
         item_successor = self.successor(item)
@@ -381,15 +376,15 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
         if not node_successor:
             self._container.last = node_predecessor
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(1)"""
         return self._container.last.item if self._container.last else None
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(1)"""
         return self._container.first.item if self._container.first else None
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         predecessor = None
         current_node = self._container.first
@@ -397,7 +392,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
             predecessor, current_node = current_node, current_node.next
         return predecessor.item if predecessor else None
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
         return item.node.next.item if item.node.next else None
 
@@ -406,11 +401,11 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
     def __init__(self):
         self._container = DoublyLinkedList()
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(n)"""
         return SinglySortedBasedDictionnary.search(self, key)
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(n)"""
         key = item.key
         previous_node = None
@@ -432,7 +427,7 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
         else:
             self._container.last = inserted_node
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(1)"""
         item_predecessor = self.predecessor(item)
         node_precedessor = item_predecessor.node if item_predecessor else None
@@ -447,19 +442,19 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
         else:
             self._container.last = node_precedessor
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(1)"""
         return SinglySortedBasedDictionnary.max(self)
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(1)"""
         return SinglySortedBasedDictionnary.min(self)
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
         return item.node.previous.item if item.node.previous else None
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
         return SinglySortedBasedDictionnary.successor(self, item)
 
@@ -468,30 +463,30 @@ class BalancedTreeBasedDictionnary(BaseDictionnary):
     def __init__(self):
         self._container = BinarySearchTree()
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """O(log n)"""
         return self._container.search(value=key).content
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(log n)"""
         self._container.insert(value=item.key, content=item)
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         """O(log n)"""
         node = self._container.search(value=item.key)
         self._container.delete(node)
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """O(log n)"""
         max_node = self._container.max()
         return max_node.content if max_node else None
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """O(log n)"""
         min_node = self._container.min()
         return min_node.content if min_node else None
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(log n)"""
         node = self._container.search(value=item.key)
         if node.left:
@@ -508,7 +503,7 @@ class BalancedTreeBasedDictionnary(BaseDictionnary):
                 ancestor = node.parent
             return ancestor.content if ancestor else None
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """O(log n)"""
         node = self._container.search(value=item.key)
         if node.right:
@@ -546,29 +541,29 @@ class Dictionnary:
             self._dict = BaseDictionnary()
         self.implementation = implementation
 
-    def search(self, key) -> Item:
+    def search(self, key) -> KeyedItem:
         """Given a search key, return a pointer to the element in dic-
         tionary self whose key value is k, if one exists."""
         return self._dict.search(key)
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         self._dict.insert(item)
 
-    def delete(self, item: Item):
+    def delete(self, item: KeyedItem):
         self._dict.delete(item)
 
-    def max(self) -> Item:
+    def max(self) -> KeyedItem:
         """retrieve item with the largest key"""
         return self._dict.max()
 
-    def min(self) -> Item:
+    def min(self) -> KeyedItem:
         """retrieve item with the smallest key"""
         return self._dict.min()
 
-    def predecessor(self, item: Item) -> Item:
+    def predecessor(self, item: KeyedItem) -> KeyedItem:
         """retrieve the item whose key is immediately before"""
         return self._dict.predecessor(item)
 
-    def successor(self, item: Item) -> Item:
+    def successor(self, item: KeyedItem) -> KeyedItem:
         """retrieve the item whose key is immediately after"""
         return self._dict.successor(item)

@@ -1,10 +1,9 @@
 from typing import Sequence, List
-from .item import Item
 
-from datastructures import Heap
+from datastructures import KeyedItem, Heap
 
 
-def heapsort(items: Sequence[Item], order=None) -> List[Item]:
+def heapsort(items: Sequence[KeyedItem], order=None) -> List[KeyedItem]:
     """O(n*log n)"""
     heap = Heap(heaptype=order)
     heap.construct(items)

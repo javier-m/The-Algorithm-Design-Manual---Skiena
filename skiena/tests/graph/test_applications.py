@@ -2,15 +2,16 @@ import pytest
 
 from graph import Vertex, Edge, Graph
 from graph.applications import *
+from graph.exceptions import *
 
 
 def test_connected_components():
     vertices = [Vertex() for i in range(6)]
     edges = [
-        Edge(start=vertices[0], end=vertices[1]),
-        Edge(start=vertices[1], end=vertices[2]),
-        Edge(start=vertices[2], end=vertices[0]),
-        Edge(start=vertices[3], end=vertices[4]),
+        Edge(head=vertices[0], tail=vertices[1]),
+        Edge(head=vertices[1], tail=vertices[2]),
+        Edge(head=vertices[2], tail=vertices[0]),
+        Edge(head=vertices[3], tail=vertices[4]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     connected_components = find_connected_components(graph)
@@ -23,11 +24,11 @@ def test_connected_components():
 def test_cycle_found():
     vertices = [Vertex() for i in range(5)]
     edges = [
-        Edge(start=vertices[0], end=vertices[1]),
-        Edge(start=vertices[1], end=vertices[2]),
-        Edge(start=vertices[1], end=vertices[4]),
-        Edge(start=vertices[2], end=vertices[3]),
-        Edge(start=vertices[3], end=vertices[1]),
+        Edge(head=vertices[0], tail=vertices[1]),
+        Edge(head=vertices[1], tail=vertices[2]),
+        Edge(head=vertices[1], tail=vertices[4]),
+        Edge(head=vertices[2], tail=vertices[3]),
+        Edge(head=vertices[3], tail=vertices[1]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     cycle_path = find_cycles(graph)
@@ -48,12 +49,12 @@ def test_cycle_found():
 def test_no_cycle_found():
     vertices = [Vertex() for i in range(7)]
     edges = [
-        Edge(start=vertices[0], end=vertices[1]),
-        Edge(start=vertices[0], end=vertices[2]),
-        Edge(start=vertices[1], end=vertices[3]),
-        Edge(start=vertices[1], end=vertices[4]),
-        Edge(start=vertices[2], end=vertices[5]),
-        Edge(start=vertices[2], end=vertices[6]),
+        Edge(head=vertices[0], tail=vertices[1]),
+        Edge(head=vertices[0], tail=vertices[2]),
+        Edge(head=vertices[1], tail=vertices[3]),
+        Edge(head=vertices[1], tail=vertices[4]),
+        Edge(head=vertices[2], tail=vertices[5]),
+        Edge(head=vertices[2], tail=vertices[6]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     cycle_path = find_cycles(graph)
@@ -63,17 +64,17 @@ def test_no_cycle_found():
 def test_topological_sorting():
     vertices = [Vertex() for i in range(9)]
     edges = [
-        Edge(start=vertices[0], end=vertices[6]),
-        Edge(start=vertices[0], end=vertices[7]),
-        Edge(start=vertices[6], end=vertices[3]),
-        Edge(start=vertices[7], end=vertices[3]),
-        Edge(start=vertices[3], end=vertices[4]),
-        Edge(start=vertices[3], end=vertices[5]),
-        Edge(start=vertices[1], end=vertices[8]),
-        Edge(start=vertices[8], end=vertices[2]),
+        Edge(head=vertices[0], tail=vertices[6]),
+        Edge(head=vertices[0], tail=vertices[7]),
+        Edge(head=vertices[6], tail=vertices[3]),
+        Edge(head=vertices[7], tail=vertices[3]),
+        Edge(head=vertices[3], tail=vertices[4]),
+        Edge(head=vertices[3], tail=vertices[5]),
+        Edge(head=vertices[1], tail=vertices[8]),
+        Edge(head=vertices[8], tail=vertices[2]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=True)
-    sorted_vertices = topological_sorting(graph)
+    sorted_vertices = topological_sort(graph)
     assert sorted_vertices.index(vertices[0]) < sorted_vertices.index(vertices[6])
     assert sorted_vertices.index(vertices[0]) < sorted_vertices.index(vertices[7])
     assert sorted_vertices.index(vertices[6]) < sorted_vertices.index(vertices[3])
@@ -87,27 +88,66 @@ def test_topological_sorting():
 def test_topological_sorting_fail_with_cycle():
     vertices = [Vertex() for i in range(9)]
     edges = [
-        Edge(start=vertices[0], end=vertices[6]),
-        Edge(start=vertices[0], end=vertices[7]),
-        Edge(start=vertices[6], end=vertices[3]),
-        Edge(start=vertices[7], end=vertices[3]),
-        Edge(start=vertices[3], end=vertices[4]),
-        Edge(start=vertices[3], end=vertices[5]),
-        Edge(start=vertices[1], end=vertices[8]),
-        Edge(start=vertices[8], end=vertices[2]),
-        Edge(start=vertices[5], end=vertices[0]),
+        Edge(head=vertices[0], tail=vertices[6]),
+        Edge(head=vertices[0], tail=vertices[7]),
+        Edge(head=vertices[6], tail=vertices[3]),
+        Edge(head=vertices[7], tail=vertices[3]),
+        Edge(head=vertices[3], tail=vertices[4]),
+        Edge(head=vertices[3], tail=vertices[5]),
+        Edge(head=vertices[1], tail=vertices[8]),
+        Edge(head=vertices[8], tail=vertices[2]),
+        Edge(head=vertices[5], tail=vertices[0]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=True)
-    with pytest.raises(NotDAG):
-        topological_sorting(graph)
+    with pytest.raises(CycleInGraphError):
+        topological_sort(graph)
 
 
 def test_topological_sorting_fail_on_undirected_graph():
     vertices = [Vertex() for i in range(3)]
     edges = [
-        Edge(start=vertices[0], end=vertices[1]),
-        Edge(start=vertices[1], end=vertices[2]),
+        Edge(head=vertices[0], tail=vertices[1]),
+        Edge(head=vertices[1], tail=vertices[2]),
     ]
     graph = Graph(vertices=vertices, edges=edges, directed=False)
-    with pytest.raises(NotDAG):
-        topological_sorting(graph)
+    with pytest.raises(GraphDirectionTypeError):
+        topological_sort(graph)
+
+
+def test_strongly_connected_components():
+    vertices = [Vertex() for i in range(9)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[6]),
+        Edge(head=vertices[6], tail=vertices[3]),
+        Edge(head=vertices[3], tail=vertices[0]),
+        Edge(head=vertices[6], tail=vertices[8]),
+        Edge(head=vertices[8], tail=vertices[5]),
+        Edge(head=vertices[5], tail=vertices[2]),
+        Edge(head=vertices[2], tail=vertices[8]),
+        Edge(head=vertices[5], tail=vertices[7]),
+        Edge(head=vertices[5], tail=vertices[7]),
+        Edge(head=vertices[7], tail=vertices[1]),
+        Edge(head=vertices[1], tail=vertices[4]),
+        Edge(head=vertices[4], tail=vertices[7]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=True)
+    ssc_list = find_strongly_connected_components(graph)
+    assert len(ssc_list) == 3
+    ssc_1 = {vertices[0], vertices[6], vertices[3]}
+    ssc_2 = {vertices[8], vertices[5], vertices[2]}
+    ssc_3 = {vertices[7], vertices[1], vertices[4]}
+
+    for i in range(3):
+        ssc = {v for v in ssc_list[i]}
+        assert ssc in [ssc_1, ssc_2, ssc_3]
+
+
+def test_strongly_connected_components_fail_on_undirected_graph():
+    vertices = [Vertex() for i in range(3)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[1]),
+        Edge(head=vertices[1], tail=vertices[2]),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    with pytest.raises(GraphDirectionTypeError):
+        find_strongly_connected_components(graph)

@@ -1,12 +1,11 @@
 import random
 
-from datastructures import Heap
-from datastructures.heap import Item
+from datastructures import Heap, KeyedItem
 
 
 def test_insert_min_heap():
     heap = Heap()
-    items = [Item(key=i) for i in range(10)]
+    items = [KeyedItem(key=i) for i in range(10)]
     random.shuffle(items)
     for item in items:
         heap.insert(item)
@@ -17,7 +16,7 @@ def test_insert_min_heap():
 
 def test_construct_min_heap():
     heap = Heap()
-    items = [Item(key=i) for i in range(10)]
+    items = [KeyedItem(key=i) for i in range(10)]
     random.shuffle(items)
     heap.construct(items)
     for i in range(10):
@@ -27,7 +26,7 @@ def test_construct_min_heap():
 
 def test_insert_max_heap():
     heap = Heap(heaptype='max')
-    items = [Item(key=i) for i in range(10)]
+    items = [KeyedItem(key=i) for i in range(10)]
     random.shuffle(items)
     for item in items:
         heap.insert(item)
@@ -38,7 +37,7 @@ def test_insert_max_heap():
 
 def test_construct_max_heap():
     heap = Heap(heaptype='max')
-    items = [Item(key=i) for i in range(10)]
+    items = [KeyedItem(key=i) for i in range(10)]
     random.shuffle(items)
     heap.construct(items)
     for i in range(10):
@@ -48,7 +47,7 @@ def test_construct_max_heap():
 
 def test_find_root():
     heap = Heap()
-    items = [Item(key=i) for i in range(10)]
+    items = [KeyedItem(key=i) for i in range(10)]
     random.shuffle(items)
     heap.construct(items)
     assert heap.find_root().key == 0

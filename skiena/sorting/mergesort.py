@@ -1,10 +1,9 @@
 from typing import Sequence
-from .item import Item
 
-from datastructures import Stack, StackEmptyError, Queue
+from datastructures import KeyedItem, Stack, StackEmptyError, Queue
 
 
-def mergesort(items: Sequence[Item], order=None) -> None:
+def mergesort(items: Sequence[KeyedItem], order=None) -> None:
     """O(n*log n)"""
     comp = lambda x, y: x > y if order == 'max' else x < y
     stack = Stack(implementation='linked_list')

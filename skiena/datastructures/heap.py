@@ -1,10 +1,6 @@
 from typing import Sequence
 
-
-class Item:
-    def __init__(self, key, content=None):
-        self.key = key
-        self.content = content
+from .keyed_item import KeyedItem
 
 
 class Heap:
@@ -24,7 +20,7 @@ class Heap:
             return None
         return self._container[0]
 
-    def extract_root(self) -> Item:
+    def extract_root(self) -> KeyedItem:
         if self._top is None:
             return None
         if not self._top:
@@ -61,7 +57,7 @@ class Heap:
                 break
         return root
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(log n)"""
         if self._top is not None:
             # insert at last position
@@ -82,7 +78,7 @@ class Heap:
             self._top = 0
             self._container[0] = item
 
-    def construct(self, items: Sequence[Item]):
+    def construct(self, items: Sequence[KeyedItem]):
         """O(n)"""
         if not items:
             return

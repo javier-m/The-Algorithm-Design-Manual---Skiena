@@ -12,7 +12,7 @@ class DoublyLinkedList:
         self.first = None
         self.last = None
 
-    def search(self, item):
+    def search(self, item) -> DoublyLinkedListNode:
         """search in O(n)"""
         node = self.first
         while node:

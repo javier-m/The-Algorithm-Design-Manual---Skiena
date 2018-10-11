@@ -17,7 +17,7 @@ class LinkedList:
             yield node.item
             node = node.next
 
-    def search(self, item):
+    def search(self, item) -> LinkedListNode:
         """search in O(n)"""
         node = self.first
         while node:
@@ -33,7 +33,7 @@ class LinkedList:
         if not self.last:
             self.last = self.first
 
-    def previous(self, item):
+    def previous(self, item) -> LinkedListNode:
         """find previous node in O(n)"""
         node = self.first
         while node:

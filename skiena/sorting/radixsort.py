@@ -1,13 +1,14 @@
 from typing import List
-from .item import Item
+
+from datastructures import KeyedItem
 
 
-def radixsort(items: List[Item], base: int=10, order=None) -> List[Item]:
+def radixsort(items: List[KeyedItem], base: int=10, order=None) -> List[KeyedItem]:
     """Non-comparison-based sorting algorithm
     O(w*n) where w is the word size
     can be faster than n*log(n) sorting algorithms if w is constant size
     otherwise, w is >= log(n) for n different items"""
-    def bucket_list(subitems: List[Item], iteration) -> List[List[Item]]:
+    def bucket_list(subitems: List[KeyedItem], iteration) -> List[List[KeyedItem]]:
         nonlocal base
         buckets = [[] for x in range(base)]
         for item in subitems:
@@ -15,7 +16,7 @@ def radixsort(items: List[Item], base: int=10, order=None) -> List[Item]:
             buckets[radix].append(item)
         return buckets
 
-    def unbucket(buckets: List[List[Item]]) -> List[Item]:
+    def unbucket(buckets: List[List[KeyedItem]]) -> List[KeyedItem]:
         nonlocal order
         subitems = []
         order_nb = -1 if order == 'max' else 1

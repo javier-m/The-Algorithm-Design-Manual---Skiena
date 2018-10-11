@@ -1,7 +1,6 @@
 import pytest
 
-from datastructures import Dictionnary
-from datastructures.dictionnary import Item
+from datastructures import Dictionnary, KeyedItem
 
 
 def test_primitives():
@@ -9,22 +8,22 @@ def test_primitives():
     with pytest.raises(NotImplementedError):
         dictionnary.search(key=0)
     with pytest.raises(NotImplementedError):
-        dictionnary.insert(Item(0, 0))
+        dictionnary.insert(KeyedItem(0, 0))
     with pytest.raises(NotImplementedError):
-        dictionnary.delete(Item(0, 0))
+        dictionnary.delete(KeyedItem(0, 0))
     with pytest.raises(NotImplementedError):
         dictionnary.max()
     with pytest.raises(NotImplementedError):
         dictionnary.min()
     with pytest.raises(NotImplementedError):
-        dictionnary.predecessor(Item(0, 0))
+        dictionnary.predecessor(KeyedItem(0, 0))
     with pytest.raises(NotImplementedError):
-        dictionnary.successor(Item(0, 0))
+        dictionnary.successor(KeyedItem(0, 0))
 
 
 def test_search_unsorted_array():
     dictionnary = Dictionnary(implementation='unsorted_array')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     assert dictionnary.search(key=0) is item
 
@@ -37,7 +36,7 @@ def test_search_fail_empty_unsorted_array():
 
 def test_search_fail_unsorted_array():
     dictionnary = Dictionnary(implementation='unsorted_array')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -46,10 +45,10 @@ def test_search_fail_unsorted_array():
 def test_min_max_unsorted_array():
     dictionnary = Dictionnary(implementation='unsorted_array')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -60,10 +59,10 @@ def test_min_max_unsorted_array():
 
 def test_predecessor_successor_unsorted_array():
     dictionnary = Dictionnary(implementation='unsorted_array')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -80,10 +79,10 @@ def test_predecessor_successor_unsorted_array():
 
 def test_delete_unsorted_array():
     dictionnary = Dictionnary(implementation='unsorted_array')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -101,11 +100,11 @@ def test_delete_unsorted_array():
 
 def test_search_sorted_array():
     dictionnary = Dictionnary(implementation='sorted_array')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -127,7 +126,7 @@ def test_search_fail_empty_sorted_array():
 
 def test_search_fail_sorted_array():
     dictionnary = Dictionnary(implementation='sorted_array')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -136,10 +135,10 @@ def test_search_fail_sorted_array():
 def test_min_max_sorted_array():
     dictionnary = Dictionnary(implementation='sorted_array')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -150,10 +149,10 @@ def test_min_max_sorted_array():
 
 def test_predecessor_successor_sorted_array():
     dictionnary = Dictionnary(implementation='sorted_array')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -170,10 +169,10 @@ def test_predecessor_successor_sorted_array():
 
 def test_delete_sorted_array():
     dictionnary = Dictionnary(implementation='sorted_array')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -191,11 +190,11 @@ def test_delete_sorted_array():
 
 def test_search_singly_unsorted():
     dictionnary = Dictionnary(implementation='singly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -217,7 +216,7 @@ def test_search_fail_empty_singly_unsorted():
 
 def test_search_fail_singly_unsorted():
     dictionnary = Dictionnary(implementation='singly_unsorted')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -226,10 +225,10 @@ def test_search_fail_singly_unsorted():
 def test_min_max_singly_unsorted():
     dictionnary = Dictionnary(implementation='singly_unsorted')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -240,10 +239,10 @@ def test_min_max_singly_unsorted():
 
 def test_predecessor_successor_singly_unsorted():
     dictionnary = Dictionnary(implementation='singly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -260,10 +259,10 @@ def test_predecessor_successor_singly_unsorted():
 
 def test_delete_singly_unsorted():
     dictionnary = Dictionnary(implementation='singly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -281,11 +280,11 @@ def test_delete_singly_unsorted():
 
 def test_search_doubly_unsorted():
     dictionnary = Dictionnary(implementation='doubly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -307,7 +306,7 @@ def test_search_fail_empty_doubly_unsorted():
 
 def test_search_fail_doubly_unsorted():
     dictionnary = Dictionnary(implementation='doubly_unsorted')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -316,10 +315,10 @@ def test_search_fail_doubly_unsorted():
 def test_min_max_doubly_unsorted():
     dictionnary = Dictionnary(implementation='doubly_unsorted')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -330,10 +329,10 @@ def test_min_max_doubly_unsorted():
 
 def test_predecessor_successor_doubly_unsorted():
     dictionnary = Dictionnary(implementation='doubly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -350,10 +349,10 @@ def test_predecessor_successor_doubly_unsorted():
 
 def test_delete_doubly_unsorted():
     dictionnary = Dictionnary(implementation='doubly_unsorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -371,11 +370,11 @@ def test_delete_doubly_unsorted():
 
 def test_search_singly_sorted():
     dictionnary = Dictionnary(implementation='singly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -397,7 +396,7 @@ def test_search_fail_empty_singly_sorted():
 
 def test_search_fail_singly_sorted():
     dictionnary = Dictionnary(implementation='singly_sorted')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -406,10 +405,10 @@ def test_search_fail_singly_sorted():
 def test_min_max_singly_sorted():
     dictionnary = Dictionnary(implementation='singly_sorted')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -420,10 +419,10 @@ def test_min_max_singly_sorted():
 
 def test_predecessor_successor_singly_sorted():
     dictionnary = Dictionnary(implementation='singly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -440,10 +439,10 @@ def test_predecessor_successor_singly_sorted():
 
 def test_delete_singly_sorted():
     dictionnary = Dictionnary(implementation='singly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -461,11 +460,11 @@ def test_delete_singly_sorted():
 
 def test_search_doubly_sorted():
     dictionnary = Dictionnary(implementation='doubly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -487,7 +486,7 @@ def test_search_fail_empty_doubly_sorted():
 
 def test_search_fail_doubly_sorted():
     dictionnary = Dictionnary(implementation='doubly_sorted')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -496,10 +495,10 @@ def test_search_fail_doubly_sorted():
 def test_min_max_doubly_sorted():
     dictionnary = Dictionnary(implementation='doubly_sorted')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -510,10 +509,10 @@ def test_min_max_doubly_sorted():
 
 def test_predecessor_successor_doubly_sorted():
     dictionnary = Dictionnary(implementation='doubly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -530,10 +529,10 @@ def test_predecessor_successor_doubly_sorted():
 
 def test_delete_doubly_sorted():
     dictionnary = Dictionnary(implementation='doubly_sorted')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -551,11 +550,11 @@ def test_delete_doubly_sorted():
 
 def test_search_balanced_tree():
     dictionnary = Dictionnary(implementation='balanced_tree')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
-    item_4 = Item(key=4, content=4)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
+    item_4 = KeyedItem(key=4, content=4)
     dictionnary.insert(item_0)
     assert dictionnary.search(key=0) is item_0
     dictionnary.insert(item_3)
@@ -577,7 +576,7 @@ def test_search_fail_empty_balanced_tree():
 
 def test_search_fail_balanced_tree():
     dictionnary = Dictionnary(implementation='balanced_tree')
-    item = Item(key=0, content=0)
+    item = KeyedItem(key=0, content=0)
     dictionnary.insert(item)
     with pytest.raises(FileNotFoundError):
         dictionnary.search(key=1)
@@ -586,10 +585,10 @@ def test_search_fail_balanced_tree():
 def test_min_max_balanced_tree():
     dictionnary = Dictionnary(implementation='balanced_tree')
     assert dictionnary.min() is None
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -600,10 +599,10 @@ def test_min_max_balanced_tree():
 
 def test_predecessor_successor_balanced_tree():
     dictionnary = Dictionnary(implementation='balanced_tree')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)
@@ -620,10 +619,10 @@ def test_predecessor_successor_balanced_tree():
 
 def test_delete_balanced_tree():
     dictionnary = Dictionnary(implementation='balanced_tree')
-    item_0 = Item(key=0, content=0)
-    item_1 = Item(key=1, content=1)
-    item_2 = Item(key=2, content=2)
-    item_3 = Item(key=3, content=3)
+    item_0 = KeyedItem(key=0, content=0)
+    item_1 = KeyedItem(key=1, content=1)
+    item_2 = KeyedItem(key=2, content=2)
+    item_3 = KeyedItem(key=3, content=3)
     dictionnary.insert(item_0)
     dictionnary.insert(item_1)
     dictionnary.insert(item_2)

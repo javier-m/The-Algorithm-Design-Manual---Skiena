@@ -1,12 +1,11 @@
 from typing import Sequence
-from .item import Item
 
 import random
 
-from datastructures import Stack, StackEmptyError
+from datastructures import KeyedItem, Stack, StackEmptyError
 
 
-def quicksort(items: Sequence[Item], order=None) -> None:
+def quicksort(items: Sequence[KeyedItem], order=None) -> None:
     """O(n*log n) expected - O(n**2) worst case"""
     comp = lambda x, y: x > y if order == 'max' else x < y
     stack = Stack(implementation='linked_list')

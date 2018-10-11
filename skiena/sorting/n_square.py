@@ -1,8 +1,9 @@
 from typing import Sequence
-from .item import Item
+
+from datastructures import KeyedItem
 
 
-def insertion_sort(items: Sequence[Item], order=None) -> Sequence[Item]:
+def insertion_sort(items: Sequence[KeyedItem], order=None) -> Sequence[KeyedItem]:
     """O(n**2) but can be fast if the inputs are *almost* sorted"""
     comp = lambda x, y: x > y if order == 'max' else x < y
     for i in range(1, len(items)):

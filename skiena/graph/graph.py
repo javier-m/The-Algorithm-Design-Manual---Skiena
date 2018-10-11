@@ -34,9 +34,9 @@ class EdgeType(Enum):
 
 
 class Edge:
-    def __init__(self, start: Vertex, end: Vertex, weight: float=None, edgetype: EdgeType=None, **kwargs):
-        self.start = start
-        self.end = end
+    def __init__(self, head: Vertex, tail: Vertex, weight: float=None, edgetype: EdgeType=None, **kwargs):
+        self.head = head
+        self.tail = tail
         self.weight = weight
         self.edgetype = edgetype
         self._kwargs = kwargs
@@ -44,20 +44,20 @@ class Edge:
             setattr(self, kwarg, value)
 
     def __repr__(self) -> str:
-        edge_repr = repr(self.start) + ' -> ' + repr(self.end) + f' - weight={self.weight}'
+        edge_repr = repr(self.head) + ' -> ' + repr(self.tail) + f' - weight={self.weight}'
         kwargs_repr = ' '.join([f'{kwarg}={value}' for kwarg, value in self._kwargs.items()])
         return edge_repr + ' ' + kwargs_repr if kwargs_repr else edge_repr
 
 
 class Edgenode:
-    def __init__(self, start: Vertex, edge: Edge):
-        if start is edge.start:
-            end = edge.end
-        elif start is edge.end:
-            end = edge.start
+    def __init__(self, head: Vertex, edge: Edge):
+        if head is edge.head:
+            tail = edge.tail
+        elif head is edge.tail:
+            tail = edge.head
         else:
             raise Exception('Starting vertex not in this edge')
-        self.end = end
+        self.tail = tail
         self.weight = edge.weight
         self.edgetype = edge.edgetype
         self._kwargs = edge._kwargs
@@ -66,13 +66,13 @@ class Edgenode:
 
 
 class AdjacencyList:
-    def __init__(self, start: Vertex):
-        self.start = start
-        self.connected_vertices = LinkedList()
+    def __init__(self, head: Vertex):
+        self.head = head
+        self.edgenodes = LinkedList()
         self.degree = 0
 
     def connect(self, edge: Edge):
-        self.connected_vertices.insert(Edgenode(start=self.start, edge=edge))
+        self.edgenodes.insert(Edgenode(head=self.head, edge=edge))
         self.degree += 1
 
 
@@ -111,13 +111,13 @@ class Graph:
         # create nodelists
         self.adjacency_lists = NodeList(vertices=vertices)
         for vertex in vertices:
-            self.adjacency_lists[vertex] = AdjacencyList(start=vertex)
+            self.adjacency_lists[vertex] = AdjacencyList(head=vertex)
         self.parent_edges = NodeList(vertices=vertices)
         # build adjacency lists
         for edge in edges:
-            self.adjacency_lists[edge.start].connect(edge)
+            self.adjacency_lists[edge.head].connect(edge)
             if not directed:
-                self.adjacency_lists[edge.end].connect(edge)
+                self.adjacency_lists[edge.tail].connect(edge)
 
     def find_path(self, start: Vertex, end: Vertex):
         """return the path from start to end vertices as a graph"""
@@ -130,7 +130,7 @@ class Graph:
             edge = self.parent_edges[end]
             if edge:
                 edge_stack.push(edge)
-                end = edge.start
+                end = edge.head
             else:
                 raise Exception(f'No path found between {start} and {end}')
         else:
@@ -179,14 +179,14 @@ class Graph:
             processed[vertex] = True
             process_vertex_early(vertex)
             adjacency_list = self.adjacency_lists[vertex]
-            for edgenode in adjacency_list.connected_vertices:
-                next_vertex = edgenode.end
+            for edgenode in adjacency_list.edgenodes:
+                next_vertex = edgenode.tail
                 if not processed[next_vertex] or self.directed:
                     process_edge(vertex, edgenode)
                 if not discovered[next_vertex]:
                     discovered[next_vertex] = True
-                    self.parent_edges[next_vertex] = Edge(start=vertex,
-                                                          end=next_vertex,
+                    self.parent_edges[next_vertex] = Edge(head=vertex,
+                                                          tail=next_vertex,
                                                           weight=edgenode.weight,
                                                           edgetype=edgenode.edgetype,
                                                           **edgenode._kwargs)
@@ -196,10 +196,10 @@ class Graph:
         processed_edges = []
         for processed_vertex in processed_vertices:
             adjacency_list = self.adjacency_lists[processed_vertex]
-            for edgenode in adjacency_list.connected_vertices:
+            for edgenode in adjacency_list.edgenodes:
                 processed_edges.append(
-                    Edge(start=processed_vertex,
-                         end=edgenode.end,
+                    Edge(head=processed_vertex,
+                         tail=edgenode.tail,
                          weight=edgenode.weight,
                          **edgenode._kwargs)
                     )
@@ -213,7 +213,7 @@ class Graph:
             process_vertex_late: Callable[[Vertex], Any]=None,
             process_edge: Callable[[Vertex, Edgenode], Any]=None,
             discovered_vertices: NodeList=None,
-            processed_vertices: NodeList=None) -> NodeList:
+            processed_vertices: NodeList=None):
         """Depth-First Search
         returns entry and exit times for each vertex
         - a vertex v1 is an ancestor of vertex v2 if the time interval of v2 is
@@ -228,13 +228,6 @@ class Graph:
         discovered = NodeList(vertices=vertices) if discovered_vertices is None else discovered_vertices  # added to stack
         processed = NodeList(vertices=vertices) if processed_vertices is None else processed_vertices  # processed and out of stack
         discovered[start] = True
-
-        class StackTime:
-            def __init__(self, entry: int=None, exit: int=None):
-                self.entry = entry
-                self.exit = exit
-
-        entry_and_exit_times = NodeList(vertices=vertices, default=StackTime())
 
         class StackItem:
             def __init__(self, vertex: Vertex, status=0, iter_edgenodes=None):
@@ -252,16 +245,16 @@ class Graph:
             except StackEmptyError:
                 break
             if not stack_item.status:
-                entry_and_exit_times[stack_item.vertex] = StackTime(entry=counter)
+                stack_item.vertex.entry_time = counter
                 counter += 1
-                stack_item.iter_edgenodes = iter(self.adjacency_lists[stack_item.vertex].connected_vertices)
+                stack_item.iter_edgenodes = iter(self.adjacency_lists[stack_item.vertex].edgenodes)
                 process_vertex_early(stack_item.vertex)
                 stack_item.status = 1
             if stack_item.status == 1:
                 while True:
                     try:
                         edgenode = next(stack_item.iter_edgenodes)
-                        next_vertex = edgenode.end
+                        next_vertex = edgenode.tail
                     except StopIteration:
                         stack_item.status = 2
                         stack.push(stack_item)
@@ -274,8 +267,8 @@ class Graph:
                         edgenode.edgetype = EdgeType.TREE
                         # the parent of the next_vertex is the head of the edge,
                         # i.e., stack_item.vertex
-                        self.parent_edges[next_vertex] = Edge(start=stack_item.vertex,
-                                                              end=next_vertex,
+                        self.parent_edges[next_vertex] = Edge(head=stack_item.vertex,
+                                                              tail=next_vertex,
                                                               weight=edgenode.weight,
                                                               edgenode=edgenode.edgetype,
                                                               **edgenode._kwargs)
@@ -292,7 +285,7 @@ class Graph:
                         if not processed[next_vertex]:
                             edgenode.edgetype = EdgeType.BACK
                         # discovered, processed but earlier entry time
-                        elif entry_and_exit_times[stack_item.vertex].entry < entry_and_exit_times[next_vertex].entry:
+                        elif stack_item.vertex.entry_time < next_vertex.entry_time:
                             edgenode.edgetype = EdgeType.FORWARD
                         # discovered, processed but later entry time
                         else:
@@ -301,7 +294,5 @@ class Graph:
             elif stack_item.status == 2:
                 process_vertex_late(stack_item.vertex)
                 processed[stack_item.vertex] = True
-                entry_and_exit_times[stack_item.vertex].exit = counter
+                stack_item.vertex.exit_time = counter
                 counter += 1
-
-        return entry_and_exit_times

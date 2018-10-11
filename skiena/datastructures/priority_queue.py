@@ -1,18 +1,13 @@
+from .keyed_item import KeyedItem
 from .binary_search_tree import BinarySearchTree
 from .heap import Heap
 
 
-class Item:
-    def __init__(self, key, content):
-        self.key = key
-        self.content = content
-
-
 class BasePriorityQueue:
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         raise NotImplementedError
 
-    def find_min(self) -> Item:
+    def find_min(self) -> KeyedItem:
         raise NotImplementedError
 
     def delete_min(self):
@@ -26,7 +21,7 @@ class UnsortedArrayBasedPriorityQueue(BasePriorityQueue):
         self._top = None
         self._item_min_index = None
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(1)"""
         if self._top is None:
             self._top = 0
@@ -38,7 +33,7 @@ class UnsortedArrayBasedPriorityQueue(BasePriorityQueue):
         if self._container[self._item_min_index].key > item.key:
             self._item_min_index = self._top
 
-    def find_min(self) -> Item:
+    def find_min(self) -> KeyedItem:
         """O(1)"""
         return self._container[self._item_min_index] if self._item_min_index is not None else None
 
@@ -70,7 +65,7 @@ class SortedArrayBasedPriorityQueue(BasePriorityQueue):
         self._container = [None] * size
         self._top = None
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(n)"""
         if self._top is None:
             self._top = 0
@@ -90,7 +85,7 @@ class SortedArrayBasedPriorityQueue(BasePriorityQueue):
             self._container[i] = item
             self._top += 1
 
-    def find_min(self) -> Item:
+    def find_min(self) -> KeyedItem:
         """O(1)"""
         return self._container[self._top] if self._top is not None else None
 
@@ -109,7 +104,7 @@ class BalancedTreeBasedPriorityQueue(BasePriorityQueue):
         self._container = BinarySearchTree()
         self._min_item = None
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(log n)"""
         self._container.insert(value=item.key, content=item)
         if not self._min_item:
@@ -118,7 +113,7 @@ class BalancedTreeBasedPriorityQueue(BasePriorityQueue):
         if self._min_item.key > item.key:
             self._min_item = item
 
-    def find_min(self) -> Item:
+    def find_min(self) -> KeyedItem:
         """O(1)"""
         return self._min_item
 
@@ -138,11 +133,11 @@ class HeapBasedPriorityQueue(BasePriorityQueue):
     def __init__(self):
         self._container = Heap(heaptype='min')
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         """O(log n)"""
         self._container.insert(item=item)
 
-    def find_min(self) -> Item:
+    def find_min(self) -> KeyedItem:
         """O(1)"""
         return self._container.find_root()
 
@@ -165,10 +160,10 @@ class PriorityQueue:
             self._priority_queue = BasePriorityQueue()
         self.implementation = implementation
 
-    def insert(self, item: Item):
+    def insert(self, item: KeyedItem):
         self._priority_queue.insert(item)
 
-    def find_min(self):
+    def find_min(self) -> KeyedItem:
         return self._priority_queue.find_min()
 
     def delete_min(self):
