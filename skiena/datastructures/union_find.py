@@ -5,6 +5,14 @@ class UnionFindGroup:
     def __init__(self, leader):
         self.leader = leader
         self.size = 1
+        self._items = [leader]
+
+    def add(self, item):
+        self._items.append(item)
+
+    def __iter__(self):
+        for item in self._items:
+            yield item
 
 
 class UnionFind:
@@ -25,10 +33,10 @@ class UnionFind:
         if large_group.size < small_group.size:
             large_group, small_group = small_group, large_group
         large_group.size += small_group.size
-        for item in self._items:
-            if item._union_find_group is small_group:
-                item._union_find_group = large_group
-
+        for item in small_group:
+            item._union_find_group = large_group
+            large_group.add(item)
+        del small_group
 
 
 class LazyUnionFind:

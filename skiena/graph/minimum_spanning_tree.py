@@ -1,6 +1,7 @@
 from math import inf
 
-from datastructures import KeyedItem, Heap
+from datastructures import KeyedItem, Heap, UnionFind
+from sorting import quicksort
 
 from .graph import Graph, Vertex, Edge, NodeList
 from .exceptions import GraphDirectionTypeError
@@ -97,6 +98,38 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
 
 
 def run_kruskal_algorithm(graph: Graph) -> Graph:
+    """O(m * log n) with union-find"""
     if graph.directed:
         raise GraphDirectionTypeError
-    
+    vertices = [v for v in graph.adjacency_lists]  # O(n)
+    union_find = UnionFind(graph.adjacency_lists)  # O(n)
+
+    # sort edges by cost
+    # O(n + m)
+    edges = []
+    for vertex in vertices:
+        for edgenode in graph.adjacency_lists[vertex].edgenodes:
+            edges.append(KeyedItem(key=edgenode.weight,
+                                   content=edgenode.to_edge(head=vertex)))
+    # O(m * log m)
+    quicksort(edges)
+
+    mst_edges = []
+    for edge_item in edges:  # m times
+        edge = edge_item.content
+        if union_find(edge.head) is not union_find(edge.tail):  # O(1)
+            mst_edges.append(edge)
+            # this one is tricky:
+            # each of the n vertices has its union-find group updated at most log2(n)
+            # since for it to be updated, it has to double in size
+            # so in total, there are O(m) cycle checks
+            # but there are O(n * log n) union-find group updates
+            union_find.union(edge.head, edge.tail)
+
+    return Graph(vertices=vertices,
+                 edges=mst_edges,
+                 directed=False)
+
+
+
+
