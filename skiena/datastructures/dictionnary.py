@@ -172,7 +172,7 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
         """O(n)"""
         for i in range(item._index + 1, self._top + 1):
             self._container[i - 1] = self._container[i]
-            self._container[i - 1].index = i - 1
+            self._container[i - 1]._index = i - 1
         self._top = self._top - 1 if self._top else None
 
     def max(self) -> KeyedItem:

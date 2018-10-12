@@ -21,21 +21,23 @@ def quicksort(items: Sequence[KeyedItem], order=None) -> None:
     while True:
         low = stack_item.low
         high = stack_item.high
-        if low < high - 1:
-            # pick pivot
-            pivot_index = random.randint(low, high)
-            pivot = items[pivot_index]
-            # partition according to pivot with linear scan
-            items[high], items[pivot_index] = items[pivot_index], items[high]
-            pivot_index = low
-            for i in range(low, high):
-                item = items[i]
-                if comp(item.key, pivot.key):
-                    items[i], items[pivot_index] = items[pivot_index], items[i]
-                    pivot_index += 1
-            items[high], items[pivot_index] = items[pivot_index], items[high]
-
+        if low < high:
             if not stack_item.status:
+                # pick pivot
+                pivot_index = random.randint(low, high)
+                pivot = items[pivot_index]
+                # partition according to pivot with linear scan
+                items[high], items[pivot_index] = items[pivot_index], items[high]
+                # all items between low+1 and i are partionned against the pivot
+                # all items below pivot index are comp(item.key, pivot.key)
+                pivot_index = low
+                for i in range(low, high):
+                    item = items[i]
+                    if comp(item.key, pivot.key):
+                        items[i], items[pivot_index] = items[pivot_index], items[i]
+                        pivot_index += 1
+                # swap pivot to its rightful position
+                items[high], items[pivot_index] = items[pivot_index], items[high]
                 # sort left of pivot
                 stack_item.status = 1
                 stack.push(stack_item)
