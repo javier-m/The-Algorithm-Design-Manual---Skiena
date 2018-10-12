@@ -40,7 +40,7 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
             for edgenode in graph.adjacency_lists[vertex].edgenodes:
                 if edgenode.tail is start:
                     if edgenode.weight < weight:
-                        edge = edgenode.to_edge(head=start)
+                        edge = edgenode.to_edge(head=vertex)
                         weight = edgenode.weight
             vertex_item = KeyedItem(key=weight,
                                     content=ItemContent(vertex=vertex, edge=edge))
@@ -61,6 +61,7 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
             vertex_item = vertex_statuses[tail]
             if vertex_item:
                 weight = vertex_item.key
+                vertex = vertex_item.content.vertex
                 edge = vertex_item.content.edge
                 # delete it from the heap
                 heap.delete(vertex_item)
@@ -70,7 +71,7 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
                     weight = new_weight
                     edge = edgenode.to_edge(head=deleted_vertex)
                 vertex_item = KeyedItem(key=weight,
-                                        content=ItemContent(vertex=deleted_vertex, edge=edge))
+                                        content=ItemContent(vertex=vertex, edge=edge))
                 # insert it back into the heap
                 heap.insert(vertex_item)
 
@@ -90,6 +91,6 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
         # update heap
         update_heap(deleted_vertex=v)
 
-    return Graph(vertices=graph.adjacency_lists,
+    return Graph(vertices=[v for v in graph.adjacency_lists],
                  edges=mst_edges,
                  directed=False)
