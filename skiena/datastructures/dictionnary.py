@@ -53,14 +53,14 @@ class UnsortedArrayBasedDictionnary(BaseDictionnary):
     def insert(self, item: KeyedItem):
         """O(1)"""
         self._top = self._top + 1 if self._top is not None else 0
-        item.index = self._top
+        item._index = self._top
         self._container[self._top] = item
 
     def delete(self, item: KeyedItem):
         """O(n)"""
         if self._top is not None:
-            self._container[item.index] = self._container[self._top]
-            self._container[item.index].index = item.index
+            self._container[item._index] = self._container[self._top]
+            self._container[item._index]._index = item._index
             self._top = self._top - 1 if self._top else None
             return
 
@@ -159,18 +159,18 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
                 i += 1
             for j in range(self._top, i - 1, -1):
                 self._container[j + 1] = self._container[j]
-                self._container[j + 1].index = j + 1
-            item.index = i
+                self._container[j + 1]._index = j + 1
+            item._index = i
             self._container[i] = item
             self._top += 1
         else:
             self._top = 0
             self._container[0] = item
-            item.index = 0
+            item._index = 0
 
     def delete(self, item: KeyedItem):
         """O(n)"""
-        for i in range(item.index + 1, self._top + 1):
+        for i in range(item._index + 1, self._top + 1):
             self._container[i - 1] = self._container[i]
             self._container[i - 1].index = i - 1
         self._top = self._top - 1 if self._top else None
@@ -189,14 +189,14 @@ class SortedArrayBasedDictionnary(BaseDictionnary):
 
     def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
-        index = item.index
+        index = item._index
         if index:
             return self._container[index - 1]
         return None
 
     def successor(self, item: KeyedItem) -> KeyedItem:
         """O(1)"""
-        index = item.index
+        index = item._index
         if index < self._top:
             return self._container[index + 1]
         return None

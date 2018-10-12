@@ -64,6 +64,13 @@ class Edgenode:
         for kwarg, value in edge._kwargs.items():
             setattr(self, kwarg, value)
 
+    def to_edge(self, head: Vertex):
+        return Edge(head=head,
+                    tail=self.tail,
+                    weight=self.weight,
+                    edgetype=self.edgetype,
+                    **self._kwargs)
+
 
 class AdjacencyList:
     def __init__(self, head: Vertex):
@@ -185,11 +192,7 @@ class Graph:
                     process_edge(vertex, edgenode)
                 if not discovered[next_vertex]:
                     discovered[next_vertex] = True
-                    self.parent_edges[next_vertex] = Edge(head=vertex,
-                                                          tail=next_vertex,
-                                                          weight=edgenode.weight,
-                                                          edgetype=edgenode.edgetype,
-                                                          **edgenode._kwargs)
+                    self.parent_edges[next_vertex] = edgenode.to_edge(head=vertex)
                     queue.enqueue(next_vertex)
             process_vertex_late(vertex)
         processed_vertices = [v for v in processed if processed[v]]
@@ -197,12 +200,7 @@ class Graph:
         for processed_vertex in processed_vertices:
             adjacency_list = self.adjacency_lists[processed_vertex]
             for edgenode in adjacency_list.edgenodes:
-                processed_edges.append(
-                    Edge(head=processed_vertex,
-                         tail=edgenode.tail,
-                         weight=edgenode.weight,
-                         **edgenode._kwargs)
-                    )
+                processed_edges.append(edgenode.to_edge(head=processed_vertex))
         return Graph(vertices=processed_vertices,
                      edges=processed_edges,
                      directed=self.directed)
@@ -267,11 +265,7 @@ class Graph:
                         edgenode.edgetype = EdgeType.TREE
                         # the parent of the next_vertex is the head of the edge,
                         # i.e., stack_item.vertex
-                        self.parent_edges[next_vertex] = Edge(head=stack_item.vertex,
-                                                              tail=next_vertex,
-                                                              weight=edgenode.weight,
-                                                              edgenode=edgenode.edgetype,
-                                                              **edgenode._kwargs)
+                        self.parent_edges[next_vertex] = edgenode.to_edge(head=stack_item.vertex)
                         process_edge(stack_item.vertex, edgenode)
                         stack.push(StackItem(vertex=next_vertex))
                         break
