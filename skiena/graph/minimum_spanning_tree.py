@@ -117,7 +117,7 @@ def run_kruskal_algorithm(graph: Graph) -> Graph:
     mst_edges = []
     for edge_item in edges:  # m times
         edge = edge_item.content
-        if union_find(edge.head) is not union_find(edge.tail):  # O(1)
+        if union_find.find(edge.head) is not union_find.find(edge.tail):  # O(1)
             mst_edges.append(edge)
             # this one is tricky:
             # each of the n vertices has its union-find group updated at most log2(n)
