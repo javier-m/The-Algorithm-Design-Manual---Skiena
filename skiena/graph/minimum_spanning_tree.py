@@ -94,3 +94,9 @@ def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
     return Graph(vertices=[v for v in graph.adjacency_lists],
                  edges=mst_edges,
                  directed=False)
+
+
+def run_kruskal_algorithm(graph: Graph) -> Graph:
+    if graph.directed:
+        raise GraphDirectionTypeError
+    

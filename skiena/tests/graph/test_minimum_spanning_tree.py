@@ -40,7 +40,6 @@ def test_prim_algorithm():
     assert tails[8] == {vertices[2]}
 
 
-
 def test_prim_algorithm_with_parallel_edges():
     vertices = [Vertex() for i in range(9)]
     edges = [
