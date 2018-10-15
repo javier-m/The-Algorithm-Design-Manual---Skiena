@@ -197,3 +197,22 @@ def test_floyd_warshall_fail_on_negative_edge_costs():
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     with pytest.raises(GraphTypeError):
         run_floyd_warshall_algorithm(graph=graph)
+
+
+def test_network_flow():
+    vertices = [Vertex() for i in range(7)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[1], weight=5),
+        Edge(head=vertices[0], tail=vertices[2], weight=12),
+        Edge(head=vertices[1], tail=vertices[3], weight=9),
+        Edge(head=vertices[1], tail=vertices[5], weight=7),
+        Edge(head=vertices[2], tail=vertices[3], weight=4),
+        Edge(head=vertices[2], tail=vertices[4], weight=7),
+        Edge(head=vertices[3], tail=vertices[4], weight=3),
+        Edge(head=vertices[3], tail=vertices[5], weight=3),
+        Edge(head=vertices[4], tail=vertices[6], weight=2),
+        Edge(head=vertices[5], tail=vertices[6], weight=5),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    flow, graph = find_network_flow(graph=graph, source=vertices[0], sink=vertices[6])
+    assert flow == 7

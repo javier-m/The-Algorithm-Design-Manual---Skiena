@@ -14,7 +14,8 @@ class Vertex:
     def __init__(self, **kwargs):
         Vertex.nb_of_instances += 1
         self._id = Vertex.nb_of_instances
-        self._kwargs = kwargs
+        for kwarg, value in kwargs.items():
+            setattr(self, kwarg, value)
 
     @property
     def id(self):
@@ -22,7 +23,9 @@ class Vertex:
 
     def __repr__(self) -> str:
         vertex_repr = f'V#{self.id}'
-        kwargs_repr = ' '.join([f'{kwarg}={value}' for kwarg, value in self._kwargs.items()])
+        kwargs_repr = ' '.join([f'{kwarg}={value}'
+                                for kwarg, value in self.__dict__.items()
+                                if kwarg != '_id'])
         return vertex_repr + ' ' + kwargs_repr if kwargs_repr else vertex_repr
 
 
@@ -37,16 +40,19 @@ class Edge:
     def __init__(self, head: Vertex, tail: Vertex, weight: float=None, edgetype: EdgeType=None, **kwargs):
         self.head = head
         self.tail = tail
-        self.weight = weight
-        self.edgetype = edgetype
-        self._kwargs = kwargs
+        if weight is not None:
+            self.weight = weight
+        if edgetype is not None:
+            self.edgetype = edgetype
         for kwarg, value in kwargs.items():
             setattr(self, kwarg, value)
 
     def __repr__(self) -> str:
-        edge_repr = repr(self.head) + ' -> ' + repr(self.tail) + f' - weight={self.weight}'
-        kwargs_repr = ' '.join([f'{kwarg}={value}' for kwarg, value in self._kwargs.items()])
-        return edge_repr + ' ' + kwargs_repr if kwargs_repr else edge_repr
+        edge_repr = repr(self.head) + ' -> ' + repr(self.tail)
+        kwargs_repr = ' '.join([f'{kwarg}={value}'
+                                for kwarg, value in self.__dict__.items()
+                                if kwarg not in ['head', 'tail', 'edgenode', 'opposite']])
+        return edge_repr + ' - ' + kwargs_repr if kwargs_repr else edge_repr
 
 
 class Edgenode:
@@ -58,18 +64,14 @@ class Edgenode:
         else:
             raise Exception('Starting vertex not in this edge')
         self.tail = tail
-        self.weight = edge.weight
-        self.edgetype = edge.edgetype
-        self._kwargs = edge._kwargs
-        for kwarg, value in edge._kwargs.items():
-            setattr(self, kwarg, value)
+        for kwarg, value in edge.__dict__.items():
+            if kwarg not in ['head', 'tail', 'edgenode']:
+                setattr(self, kwarg, value)
 
     def to_edge(self, head: Vertex):
-        return Edge(head=head,
-                    tail=self.tail,
-                    weight=self.weight,
-                    edgetype=self.edgetype,
-                    **self._kwargs)
+        return Edge(edgenode=self,
+                    head=head,
+                    **self.__dict__)
 
 
 class AdjacencyList:
@@ -163,12 +165,14 @@ class Graph:
             process_vertex_late: Callable[[Vertex], Any]=None,
             process_edge: Callable[[Vertex, Edgenode], Any]=None,
             discovered_vertices: NodeList=None,
-            processed_vertices: NodeList=None):
+            processed_vertices: NodeList=None,
+            is_edge_processable: Callable[[Vertex, Edgenode], bool]=None):
         """Breadth-First Search
         returns the graph of processed vertices - one single connected component"""
         process_vertex_early = process_vertex_early if process_vertex_early else lambda v: None
         process_vertex_late = process_vertex_late if process_vertex_late else lambda v: None
         process_edge = process_edge if process_edge else lambda v, e: None
+        is_edge_processable = is_edge_processable if is_edge_processable else lambda v, e: True
 
         vertices = [v for v in self.adjacency_lists]
         self.parent_edges = NodeList(vertices=vertices)  # reinit parents
@@ -187,13 +191,14 @@ class Graph:
             process_vertex_early(vertex)
             adjacency_list = self.adjacency_lists[vertex]
             for edgenode in adjacency_list.edgenodes:
-                next_vertex = edgenode.tail
-                if not processed[next_vertex] or self.directed:
-                    process_edge(vertex, edgenode)
-                if not discovered[next_vertex]:
-                    discovered[next_vertex] = True
-                    self.parent_edges[next_vertex] = edgenode.to_edge(head=vertex)
-                    queue.enqueue(next_vertex)
+                if is_edge_processable(vertex, edgenode):
+                    next_vertex = edgenode.tail
+                    if not processed[next_vertex] or self.directed:
+                        process_edge(vertex, edgenode)
+                    if not discovered[next_vertex]:
+                        discovered[next_vertex] = True
+                        self.parent_edges[next_vertex] = edgenode.to_edge(head=vertex)
+                        queue.enqueue(next_vertex)
             process_vertex_late(vertex)
         processed_vertices = [v for v in processed if processed[v]]
         processed_edges = []

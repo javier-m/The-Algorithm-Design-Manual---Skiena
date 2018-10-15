@@ -17,7 +17,7 @@ def test_repr_edge():
     v2 = Vertex(a=1, b=2)
     e1 = Edge(v1, v2)
     e2 = Edge(v1, v2, weight=1, c=3, d=4)
-    assert re.match(r'^V#\d+\s->\sV#\d+\sa=1\sb=2\s-\sweight=None$', repr(e1))
+    assert re.match(r'^V#\d+\s->\sV#\d+\sa=1\sb=2$', repr(e1))
     assert re.match(r'^V#\d+\s->\sV#\d+\sa=1\sb=2\s-\sweight=1\sc=3\sd=4$', repr(e2))
 
 

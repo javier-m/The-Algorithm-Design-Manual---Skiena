@@ -1,9 +1,9 @@
 from typing import List
 from math import inf
 
-from datastructures import KeyedItem, Heap
+from datastructures import KeyedItem, Heap, Stack, StackEmptyError
 
-from .graph import Graph, Vertex, Edge, NodeList
+from .graph import Graph, Vertex, Edge, NodeList, Edgenode
 from .exceptions import *
 
 
@@ -143,3 +143,97 @@ def run_floyd_warshall_algorithm(graph: Graph) -> NodeList:
                     distances[v_i][v_j] = dist_v_i_v_k_v_j
 
     return distances
+
+
+def find_network_flow(graph: Graph,
+                      source: Vertex,
+                      sink: Vertex) -> [float, Graph]:
+    # initialize by creating residual graph
+    edges = []
+    for vertex in graph.adjacency_lists:
+        for edgenode in graph.adjacency_lists[vertex].edgenodes:
+            edge = edgenode.to_edge(head=vertex)
+            edge.flow = 0
+            edge.residual = edgenode.weight
+            edge.opposite = None
+            edges.append(edge)
+            opposite_edge = edgenode.to_edge(head=vertex)
+            opposite_edge.head, opposite_edge.tail = opposite_edge.tail, opposite_edge.head
+            opposite_edge.flow = 0
+            opposite_edge.residual = 0
+            opposite_edge.opposite = edge
+            edge.opposite = opposite_edge
+            edges.append(opposite_edge)
+    graph = Graph(vertices=[v for v in graph.adjacency_lists],
+                  edges=edges,
+                  directed=True)
+
+    def is_edge_processable(head: Vertex, edgenode: Edgenode):
+        return True if edgenode.residual > 0 else False
+
+    def calculate_path_volume(graph: Graph,
+                              start: Vertex,
+                              end: Vertex) -> float:
+        stack = Stack(implementation='linked_list')
+        parent_edges = graph.parent_edges
+        while True:
+            edge = parent_edges[end]
+            if edge:
+                stack.push(edge)
+                end = edge.head
+                if end is start:
+                    break
+            else:
+                return 0
+        volume = inf
+        while True:
+            try:
+                volume = min(volume, stack.pop().residual)
+            except StackEmptyError:
+                break
+        return volume
+
+    def augment_path(graph: Graph,
+                     start: Vertex,
+                     end: Vertex,
+                     volume: float):
+        stack = Stack(implementation='linked_list')
+        parent_edges = graph.parent_edges
+        while True:
+            edge = parent_edges[end]
+            if edge:
+                stack.push(edge)
+                end = edge.head
+                if end is start:
+                    break
+            else:
+                break
+        while True:
+            try:
+                edge = stack.pop()
+            except StackEmptyError:
+                break
+            else:
+                edge.edgenode.flow += volume
+                edge.edgenode.residual -= volume
+                edge.edgenode.opposite.residual += volume
+
+    graph.bfs(start=source,
+              is_edge_processable=is_edge_processable)  # get parent_edges at each BFS
+    volume = 0
+    new_volume = calculate_path_volume(graph=graph,
+                                       start=source,
+                                       end=sink)
+    while new_volume > 0:
+        volume += new_volume
+        augment_path(graph=graph,
+                     start=source,
+                     end=sink,
+                     volume=new_volume)
+        graph.bfs(start=source,
+                  is_edge_processable=is_edge_processable)  # get parent_edges at each BFS
+        new_volume = calculate_path_volume(graph=graph,
+                                           start=source,
+                                           end=sink)
+
+    return volume, graph
