@@ -105,3 +105,95 @@ def test_dijkstra_algorithm_fail_on_negative_edge_costs():
     graph = Graph(vertices=vertices, edges=edges, directed=False)
     with pytest.raises(GraphTypeError):
         run_dijkstra_algorithm(graph=graph, source=vertices[0])
+
+
+def test_floyd_warshall_algorithm():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[1], weight=4),
+        Edge(head=vertices[0], tail=vertices[2], weight=2),
+        Edge(head=vertices[1], tail=vertices[2], weight=1),
+        Edge(head=vertices[1], tail=vertices[3], weight=5),
+        Edge(head=vertices[2], tail=vertices[3], weight=8),
+        Edge(head=vertices[2], tail=vertices[4], weight=10),
+        Edge(head=vertices[3], tail=vertices[4], weight=2),
+        Edge(head=vertices[3], tail=vertices[5], weight=6),
+        Edge(head=vertices[4], tail=vertices[5], weight=5),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    shortest_paths = run_floyd_warshall_algorithm(graph=graph)
+    assert shortest_paths[vertices[0]][vertices[1]] == 3
+    assert shortest_paths[vertices[0]][vertices[2]] == 2
+    assert shortest_paths[vertices[0]][vertices[3]] == 8
+    assert shortest_paths[vertices[0]][vertices[4]] == 10
+    assert shortest_paths[vertices[0]][vertices[5]] == 14
+    assert shortest_paths[vertices[1]][vertices[2]] == 1
+    assert shortest_paths[vertices[1]][vertices[3]] == 5
+    assert shortest_paths[vertices[1]][vertices[4]] == 7
+    assert shortest_paths[vertices[1]][vertices[5]] == 11
+    assert shortest_paths[vertices[2]][vertices[3]] == 6
+    assert shortest_paths[vertices[2]][vertices[4]] == 8
+    assert shortest_paths[vertices[2]][vertices[5]] == 12
+    assert shortest_paths[vertices[3]][vertices[4]] == 2
+    assert shortest_paths[vertices[3]][vertices[5]] == 6
+    assert shortest_paths[vertices[4]][vertices[5]] == 5
+    for i in range(6):
+        assert shortest_paths[vertices[i]][vertices[i]] == 0
+    for i in range(5):
+        for j in range(i+1, 6):
+            assert shortest_paths[vertices[i]][vertices[j]] == shortest_paths[vertices[j]][vertices[i]]
+
+
+def test_floyd_warshall_algorithm_with_parallel_edges():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[1], weight=4),
+        Edge(head=vertices[0], tail=vertices[2], weight=2),
+        Edge(head=vertices[1], tail=vertices[2], weight=1),
+        Edge(head=vertices[1], tail=vertices[3], weight=5),
+        Edge(head=vertices[2], tail=vertices[3], weight=8),
+        Edge(head=vertices[2], tail=vertices[4], weight=10),
+        Edge(head=vertices[3], tail=vertices[4], weight=2),
+        Edge(head=vertices[3], tail=vertices[5], weight=6),
+        Edge(head=vertices[4], tail=vertices[5], weight=5),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    shortest_paths = run_floyd_warshall_algorithm(graph=graph)
+    assert shortest_paths[vertices[0]][vertices[1]] == 3
+    assert shortest_paths[vertices[0]][vertices[2]] == 2
+    assert shortest_paths[vertices[0]][vertices[3]] == 8
+    assert shortest_paths[vertices[0]][vertices[4]] == 10
+    assert shortest_paths[vertices[0]][vertices[5]] == 14
+    assert shortest_paths[vertices[1]][vertices[2]] == 1
+    assert shortest_paths[vertices[1]][vertices[3]] == 5
+    assert shortest_paths[vertices[1]][vertices[4]] == 7
+    assert shortest_paths[vertices[1]][vertices[5]] == 11
+    assert shortest_paths[vertices[2]][vertices[3]] == 6
+    assert shortest_paths[vertices[2]][vertices[4]] == 8
+    assert shortest_paths[vertices[2]][vertices[5]] == 12
+    assert shortest_paths[vertices[3]][vertices[4]] == 2
+    assert shortest_paths[vertices[3]][vertices[5]] == 6
+    assert shortest_paths[vertices[4]][vertices[5]] == 5
+    for i in range(6):
+        assert shortest_paths[vertices[i]][vertices[i]] == 0
+    for i in range(5):
+        for j in range(i+1, 6):
+            assert shortest_paths[vertices[i]][vertices[j]] == shortest_paths[vertices[j]][vertices[i]]
+
+
+def test_floyd_warshall_fail_on_negative_edge_costs():
+    vertices = [Vertex() for i in range(6)]
+    edges = [
+        Edge(head=vertices[0], tail=vertices[1], weight=4),
+        Edge(head=vertices[0], tail=vertices[2], weight=2),
+        Edge(head=vertices[1], tail=vertices[2], weight=1),
+        Edge(head=vertices[1], tail=vertices[3], weight=5),
+        Edge(head=vertices[2], tail=vertices[3], weight=8),
+        Edge(head=vertices[2], tail=vertices[4], weight=10),
+        Edge(head=vertices[3], tail=vertices[4], weight=-2),
+        Edge(head=vertices[3], tail=vertices[5], weight=6),
+        Edge(head=vertices[4], tail=vertices[5], weight=5),
+    ]
+    graph = Graph(vertices=vertices, edges=edges, directed=False)
+    with pytest.raises(GraphTypeError):
+        run_floyd_warshall_algorithm(graph=graph)

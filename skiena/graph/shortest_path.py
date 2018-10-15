@@ -1,3 +1,4 @@
+from typing import List
 from math import inf
 
 from datastructures import KeyedItem, Heap
@@ -116,3 +117,29 @@ def run_dijkstra_algorithm(graph: Graph,
         update_heap(deleted_vertex=v, distance_to_deleted_vertex=shortest_paths[v].distance)
 
     return shortest_paths
+
+
+def run_floyd_warshall_algorithm(graph: Graph) -> NodeList:
+    """O(n**3)"""
+    # convert adjacency-list-based graph into adjacency matrix
+    distances = NodeList(vertices=graph.adjacency_lists)
+    for vertex in distances:
+        distances[vertex] = NodeList(vertices=graph.adjacency_lists,
+                                     default=inf)
+        distances[vertex][vertex] = 0
+        for edgenode in graph.adjacency_lists[vertex].edgenodes:
+            tail = edgenode.tail
+            if edgenode.weight < 0:
+                raise GraphTypeError
+            if edgenode.weight < distances[vertex][tail]:
+                distances[vertex][tail] = edgenode.weight 
+
+    for v_k in distances:
+        for v_i in distances:
+            for v_j in distances[v_i]:
+                dist_v_i_v_j = distances[v_i][v_j]
+                dist_v_i_v_k_v_j = distances[v_i][v_k] + distances[v_k][v_j]
+                if dist_v_i_v_k_v_j < dist_v_i_v_j:
+                    distances[v_i][v_j] = dist_v_i_v_k_v_j
+
+    return distances
