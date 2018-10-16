@@ -9,7 +9,7 @@ from .exceptions import GraphDirectionTypeError
 
 def run_prim_algorithm(graph: Graph, start: Vertex) -> Graph:
     """O(m + n*log n) with priority queue (heap-based) implementation
-    for undirected graph - works negative with edge costs
+    for undirected graph - works with negative edge costs
     returns the tree spanning all vertices whose sum of edge costs
     is minimal"""
     if graph.directed:

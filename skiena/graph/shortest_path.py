@@ -1,4 +1,3 @@
-from typing import List
 from math import inf
 
 from datastructures import KeyedItem, Heap, Stack, StackEmptyError
