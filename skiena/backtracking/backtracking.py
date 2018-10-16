@@ -1,4 +1,4 @@
-from typing import Callable, Any, Iterator
+from typing import Callable, Any, Iterator, Tuple
 
 from datastructures import Stack, StackEmptyError
 
@@ -9,7 +9,7 @@ def backtrack(a: list,
               inputs: Any=None,
               process_solution: Callable[[list, int, Any], Any]=None,
               make_move: Callable[[list, int, Any], Any]=None,
-              unmake_move: Callable[[list, int, Any], Any]=None) -> Iterator:
+              unmake_move: Callable[[list, int, Any], Any]=None) -> Iterator[Tuple[list, int]]:
     """backtracking DFS style"""
     if process_solution is None:
         process_solution = lambda a, k, inputs: None
@@ -46,7 +46,7 @@ def backtrack(a: list,
                 make_move(a, stack_item.k, inputs)
                 if is_a_solution(a, stack_item.k, inputs):
                     process_solution(a, stack_item.k, inputs)
-                    yield a
+                    yield a[:stack_item.k+1]
                     stack.push(stack_item)
                 else:
                     stack.push(stack_item)
