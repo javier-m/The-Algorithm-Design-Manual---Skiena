@@ -208,7 +208,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
 
     def search(self, key) -> KeyedItem:
         """O(n)"""
-        node = self._container.first
+        node = self._container.head
         while node:
             if node.item.key == key:
                 return node.item
@@ -223,7 +223,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         """O(n)"""
         key = item.key
         previous_node = None
-        item_node = self._container.first
+        item_node = self._container.head
         while item_node:
             if item_node.item.key == key:
                 break
@@ -231,16 +231,16 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         if previous_node:
             previous_node.next = item_node.next
         else:
-            self._container.first = item_node.next
+            self._container.head = item_node.next
         if not item_node.next:
-            self._container.last = previous_node
+            self._container.tail = previous_node
 
     def max(self) -> KeyedItem:
         """O(n)"""
         from math import inf
         max_key = -inf
         max_item = None
-        node = self._container.first
+        node = self._container.head
         while node:
             if node.item.key > max_key:
                 max_key = node.item.key
@@ -253,7 +253,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         from math import inf
         min_key = inf
         min_item = None
-        node = self._container.first
+        node = self._container.head
         while node:
             if node.item.key < min_key:
                 min_key = node.item.key
@@ -267,7 +267,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         key = item.key
         predecessor = None
         predecessor_key = -inf
-        current_node = self._container.first
+        current_node = self._container.head
         while current_node:
             current_key = current_node.item.key
             if predecessor_key < current_key < key:
@@ -281,7 +281,7 @@ class SinglyUnsortedBasedDictionnary(BaseDictionnary):
         key = item.key
         successor = None
         successor_key = inf
-        current_node = self._container.first
+        current_node = self._container.head
         while current_node:
             current_key = current_node.item.key
             if successor_key > current_key > key:
@@ -301,7 +301,7 @@ class DoublyUnsortedBasedDictionnary(BaseDictionnary):
     def insert(self, item: KeyedItem):
         """O(1)"""
         SinglyUnsortedBasedDictionnary.insert(self, item)
-        item.node = self._container.first
+        item.node = self._container.head
 
     def delete(self, item: KeyedItem):
         """O(1)"""
@@ -309,11 +309,11 @@ class DoublyUnsortedBasedDictionnary(BaseDictionnary):
         if previous_node:
             previous_node.next = next_node
         else:
-            self._container.first = next_node
+            self._container.head = next_node
         if next_node:
             next_node.previous = previous_node
         else:
-            self._container.last = previous_node
+            self._container.tail = previous_node
 
     def max(self) -> KeyedItem:
         """O(n)"""
@@ -338,7 +338,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
 
     def search(self, key) -> KeyedItem:
         """O(n)"""
-        node = self._container.first
+        node = self._container.head
         while node:
             if node.item.key == key:
                 return node.item
@@ -349,7 +349,7 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
         """O(n)"""
         key = item.key
         previous_node = None
-        current_node = self._container.first
+        current_node = self._container.head
         while current_node:
             if current_node.item.key > key:
                 break
@@ -359,9 +359,9 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
         if previous_node:
             previous_node.next = inserted_node
         else:
-            self._container.first = inserted_node
+            self._container.head = inserted_node
         if not current_node:
-            self._container.last = inserted_node
+            self._container.tail = inserted_node
 
     def delete(self, item: KeyedItem):
         """O(n)"""
@@ -372,22 +372,22 @@ class SinglySortedBasedDictionnary(BaseDictionnary):
         if node_predecessor:
             node_predecessor.next = node_successor
         else:
-            self._container.first = node_successor
+            self._container.head = node_successor
         if not node_successor:
-            self._container.last = node_predecessor
+            self._container.tail = node_predecessor
 
     def max(self) -> KeyedItem:
         """O(1)"""
-        return self._container.last.item if self._container.last else None
+        return self._container.tail.item if self._container.tail else None
 
     def min(self) -> KeyedItem:
         """O(1)"""
-        return self._container.first.item if self._container.first else None
+        return self._container.head.item if self._container.head else None
 
     def predecessor(self, item: KeyedItem) -> KeyedItem:
         """O(n)"""
         predecessor = None
-        current_node = self._container.first
+        current_node = self._container.head
         while current_node.item is not item:
             predecessor, current_node = current_node, current_node.next
         return predecessor.item if predecessor else None
@@ -409,7 +409,7 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
         """O(n)"""
         key = item.key
         previous_node = None
-        current_node = self._container.first
+        current_node = self._container.head
         while current_node:
             if current_node.item.key > key:
                 break
@@ -421,11 +421,11 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
         if previous_node:
             previous_node.next = inserted_node
         else:
-            self._container.first = inserted_node
+            self._container.head = inserted_node
         if current_node:
             current_node.previous = inserted_node
         else:
-            self._container.last = inserted_node
+            self._container.tail = inserted_node
 
     def delete(self, item: KeyedItem):
         """O(1)"""
@@ -436,11 +436,11 @@ class DoublySortedBasedDictionnary(BaseDictionnary):
         if node_precedessor:
             node_precedessor.next = node_successor
         else:
-            self._container.first = node_successor
+            self._container.head = node_successor
         if node_successor:
             node_successor.previous = node_precedessor
         else:
-            self._container.last = node_precedessor
+            self._container.tail = node_precedessor
 
     def max(self) -> KeyedItem:
         """O(1)"""

@@ -40,10 +40,10 @@ class LinkedListBasedStack(BaseStack):
         self._container.insert(item)
 
     def pop(self):
-        if self._container.first:
-            node = self._container.first
+        if self._container.head:
+            node = self._container.head
             next_node = node.next
-            self._container.first = next_node
+            self._container.head = next_node
             return node.item
         raise StackEmptyError
 

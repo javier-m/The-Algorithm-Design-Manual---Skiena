@@ -32,7 +32,7 @@ class HashTable:
         """O(1)"""
         item = Item(key=item.key, content=item.content, m=self._m)
         self._container[item.hash].insert(item)
-        item.node = self._container[item.hash].first
+        item.node = self._container[item.hash].head
 
     def delete(self, item: Item):
         """O(1)"""

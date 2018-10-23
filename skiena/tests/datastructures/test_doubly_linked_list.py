@@ -5,22 +5,22 @@ from datastructures import DoublyLinkedList
 
 def test_insert():
     doubly_linked_list = DoublyLinkedList()
-    assert doubly_linked_list.first is None
-    assert doubly_linked_list.last is None
+    assert doubly_linked_list.head is None
+    assert doubly_linked_list.tail is None
     doubly_linked_list.insert('a')
-    assert doubly_linked_list.first.item == 'a'
-    assert doubly_linked_list.first.previous is None
-    assert doubly_linked_list.first.next is None
-    assert doubly_linked_list.last.item == 'a'
-    assert doubly_linked_list.last.previous is None
-    assert doubly_linked_list.last.next is None
+    assert doubly_linked_list.head.item == 'a'
+    assert doubly_linked_list.head.previous is None
+    assert doubly_linked_list.head.next is None
+    assert doubly_linked_list.tail.item == 'a'
+    assert doubly_linked_list.tail.previous is None
+    assert doubly_linked_list.tail.next is None
     doubly_linked_list.insert('b')
-    assert doubly_linked_list.first.item == 'b'
-    assert doubly_linked_list.first.previous is None
-    assert doubly_linked_list.first.next.item == 'a'
-    assert doubly_linked_list.last.item == 'a'
-    assert doubly_linked_list.last.previous.item == 'b'
-    assert doubly_linked_list.last.next is None
+    assert doubly_linked_list.head.item == 'b'
+    assert doubly_linked_list.head.previous is None
+    assert doubly_linked_list.head.next.item == 'a'
+    assert doubly_linked_list.tail.item == 'a'
+    assert doubly_linked_list.tail.previous.item == 'b'
+    assert doubly_linked_list.tail.next is None
 
 
 def test_search():
@@ -45,22 +45,22 @@ def test_delete():
     for i in 'abc':
         doubly_linked_list.insert(i)
     doubly_linked_list.delete('b')
-    assert doubly_linked_list.first.item == 'c'
-    assert doubly_linked_list.first.previous is None
-    assert doubly_linked_list.first.next.item == 'a'
-    assert doubly_linked_list.last.item == 'a'
-    assert doubly_linked_list.last.previous.item == 'c'
-    assert doubly_linked_list.last.next is None
+    assert doubly_linked_list.head.item == 'c'
+    assert doubly_linked_list.head.previous is None
+    assert doubly_linked_list.head.next.item == 'a'
+    assert doubly_linked_list.tail.item == 'a'
+    assert doubly_linked_list.tail.previous.item == 'c'
+    assert doubly_linked_list.tail.next is None
     doubly_linked_list.delete('a')
-    assert doubly_linked_list.first.item == 'c'
-    assert doubly_linked_list.first.previous is None
-    assert doubly_linked_list.first.next is None
-    assert doubly_linked_list.last.item == 'c'
-    assert doubly_linked_list.last.previous is None
-    assert doubly_linked_list.last.next is None
+    assert doubly_linked_list.head.item == 'c'
+    assert doubly_linked_list.head.previous is None
+    assert doubly_linked_list.head.next is None
+    assert doubly_linked_list.tail.item == 'c'
+    assert doubly_linked_list.tail.previous is None
+    assert doubly_linked_list.tail.next is None
     doubly_linked_list.delete('c')
-    assert doubly_linked_list.first is None
-    assert doubly_linked_list.last is None
+    assert doubly_linked_list.head is None
+    assert doubly_linked_list.tail is None
 
 
 def test_delete_fail():

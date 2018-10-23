@@ -9,12 +9,12 @@ class DoublyLinkedListNode:
 class DoublyLinkedList:
     """linked list"""
     def __init__(self):
-        self.first = None
-        self.last = None
+        self.head = None
+        self.tail = None
 
     def search(self, item) -> DoublyLinkedListNode:
         """search in O(n)"""
-        node = self.first
+        node = self.head
         while node:
             if node.item == item:
                 return node
@@ -23,13 +23,13 @@ class DoublyLinkedList:
 
     def insert(self, item):
         """insert in O(1)"""
-        former_first = self.first
-        self.first = DoublyLinkedListNode(item=item, next=former_first)
-        # if it is the first item to be inserted
-        if not former_first:
-            self.last = self.first
+        former_head = self.head
+        self.head = DoublyLinkedListNode(item=item, next=former_head)
+        # if it is the head item to be inserted
+        if not former_head:
+            self.tail = self.head
         else:
-            former_first.previous = self.first
+            former_head.previous = self.head
 
     def delete(self, item):
         """delete in O(n)"""
@@ -39,9 +39,9 @@ class DoublyLinkedList:
         if previous_node:
             previous_node.next = next_node
         else:
-            self.first = next_node
+            self.head = next_node
         if next_node:
             next_node.previous = previous_node
         else:
-            self.last = previous_node
+            self.tail = previous_node
         del node
