@@ -63,24 +63,22 @@ class DoublyLinkedListBasedQueue(BaseQueue):
 
     @property
     def head(self):
-        return self._container.tail.item if self._container.tail else None
+        return self._container.tail.item
 
     @property
     def tail(self):
-        return self._container.head.item if self._container.head else None
+        return self._container.head.item
 
     def enqueue(self, item):
         self._container.insert(item)
 
     def dequeue(self):
         last_node = self._container.tail
-        if last_node:
+        if last_node is not self._container._nil:
             item = last_node.item
-            self._container.tail = last_node.previous
-            if self._container.tail:
-                self._container.tail.next = None
-            else:
-                self._container.head = None
+            last_node.previous.next = last_node.next
+            last_node.next.previous = last_node.previous
+            del last_node
             return item
         raise QueueEmptyError
 

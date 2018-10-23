@@ -8,19 +8,25 @@ class LinkedListNode:
 class LinkedList:
     """linked list"""
     def __init__(self):
-        self.head = None
-        self.tail = None
+        # sentinel
+        self._nil = LinkedListNode(item=None)
+        self._nil.next = self._nil
+        self.tail = self._nil
+
+    @property
+    def head(self):
+        return self._nil.next
 
     def __iter__(self):
         node = self.head
-        while node:
+        while node.item is not None:
             yield node.item
             node = node.next
 
     def search(self, item) -> LinkedListNode:
         """search in O(n)"""
         node = self.head
-        while node:
+        while node is not self._nil:
             if node.item == item:
                 return node
             node = node.next
@@ -28,34 +34,31 @@ class LinkedList:
 
     def insert(self, item):
         """insert in O(1)"""
-        self.head = LinkedListNode(item=item, next=self.head)
+        item_node = LinkedListNode(item=item, next=self._nil.next)
+        self._nil.next = item_node
         # if it is the head item to be inserted
-        if not self.tail:
-            self.tail = self.head
+        if self.tail is self._nil:
+            self.tail = item_node
 
     def previous(self, item) -> LinkedListNode:
         """find previous node in O(n)"""
         node = self.head
-        while node:
-            if node.next and node.next.item == item:
+        while node is not self._nil:
+            if node.next.item is item:
                 return node
             node = node.next
-        return None
+        return node
 
     def delete(self, item):
         """delete in O(n)"""
-        previous_node = None
+        previous_node = self._nil
         node = self.head
-        while node:
-            next_node = node.next
-            if node.item == item:
-                if previous_node:
-                    previous_node.next = next_node
-                if node is self.head:
-                    self.head = next_node
+        while node is not self._nil:
+            if node.item is item:
+                previous_node.next = node.next
                 if node is self.tail:
                     self.tail = previous_node
                 del node
                 return
-            previous_node, node = node, next_node
+            previous_node, node = node, node.next
         raise FileNotFoundError

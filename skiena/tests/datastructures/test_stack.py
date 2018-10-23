@@ -13,14 +13,15 @@ def test_primitives():
 
 def test_array_implementation():
     stack = Stack(implementation='array')
-    stack.push('a')
-    assert stack.pop() == 'a'
-    stack.push('b')
-    stack.push('c')
-    assert stack.pop() == 'c'
-    stack.push('d')
-    assert stack.pop() == 'd'
-    assert stack.pop() == 'b'
+    a, b, c, d = list('abcd')
+    stack.push(a)
+    assert stack.pop() is a
+    stack.push(b)
+    stack.push(c)
+    assert stack.pop() is c
+    stack.push(d)
+    assert stack.pop() is d
+    assert stack.pop() is b
 
 
 def test_array_implementation_empty_stack():
@@ -31,14 +32,15 @@ def test_array_implementation_empty_stack():
 
 def test_linked_list_implementation():
     stack = Stack(implementation='linked_list')
-    stack.push('a')
-    assert stack.pop() == 'a'
-    stack.push('b')
-    stack.push('c')
-    assert stack.pop() == 'c'
-    stack.push('d')
-    assert stack.pop() == 'd'
-    assert stack.pop() == 'b'
+    a, b, c, d = list('abcd')
+    stack.push(a)
+    assert stack.pop() is a
+    stack.push(b)
+    stack.push(c)
+    assert stack.pop() is c
+    stack.push(d)
+    assert stack.pop() is d
+    assert stack.pop() is b
 
 
 def test_linked_list_implementation_empty_stack():

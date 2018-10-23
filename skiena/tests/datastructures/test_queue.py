@@ -17,28 +17,29 @@ def test_primitives():
 
 def test_array_implementation():
     queue = Queue(implementation='array')
+    a, b, c, d = list('abcd')
     assert queue.head is None
     assert queue.tail is None
-    queue.enqueue('a')
-    assert queue.head == 'a'
-    assert queue.tail == 'a'
-    assert queue.dequeue() == 'a'
+    queue.enqueue(a)
+    assert queue.head is a
+    assert queue.tail is a
+    assert queue.dequeue() is a
     assert queue.head is None
     assert queue.tail is None
-    queue.enqueue('b')
-    queue.enqueue('c')
-    assert queue.head == 'b'
-    assert queue.tail == 'c'
-    assert queue.dequeue() == 'b'
-    assert queue.head == 'c'
-    assert queue.tail == 'c'
-    queue.enqueue('d')
-    assert queue.head == 'c'
-    assert queue.tail == 'd'
-    assert queue.dequeue() == 'c'
-    assert queue.head == 'd'
-    assert queue.tail == 'd'
-    assert queue.dequeue() == 'd'
+    queue.enqueue(b)
+    queue.enqueue(c)
+    assert queue.head is b
+    assert queue.tail is c
+    assert queue.dequeue() is b
+    assert queue.head is c
+    assert queue.tail is c
+    queue.enqueue(d)
+    assert queue.head is c
+    assert queue.tail is d
+    assert queue.dequeue() is c
+    assert queue.head is d
+    assert queue.tail is d
+    assert queue.dequeue() is d
     assert queue.head is None
     assert queue.tail is None
 
@@ -51,28 +52,29 @@ def test_array_implementation_empty_queue():
 
 def test_linked_list_implementation():
     queue = Queue(implementation='doubly_linked_list')
+    a, b, c, d = list('abcd')
     assert queue.head is None
     assert queue.tail is None
-    queue.enqueue('a')
-    assert queue.head == 'a'
-    assert queue.tail == 'a'
-    assert queue.dequeue() == 'a'
+    queue.enqueue(a)
+    assert queue.head is a
+    assert queue.tail is a
+    assert queue.dequeue() is a
     assert queue.head is None
     assert queue.tail is None
-    queue.enqueue('b')
-    queue.enqueue('c')
-    assert queue.head == 'b'
-    assert queue.tail == 'c'
-    assert queue.dequeue() == 'b'
-    assert queue.head == 'c'
-    assert queue.tail == 'c'
-    queue.enqueue('d')
-    assert queue.head == 'c'
-    assert queue.tail == 'd'
-    assert queue.dequeue() == 'c'
-    assert queue.head == 'd'
-    assert queue.tail == 'd'
-    assert queue.dequeue() == 'd'
+    queue.enqueue(b)
+    queue.enqueue(c)
+    assert queue.head is b
+    assert queue.tail is c
+    assert queue.dequeue() is b
+    assert queue.head is c
+    assert queue.tail is c
+    queue.enqueue(d)
+    assert queue.head is c
+    assert queue.tail is d
+    assert queue.dequeue() is c
+    assert queue.head is d
+    assert queue.tail is d
+    assert queue.dequeue() is d
     assert queue.head is None
     assert queue.tail is None
 
