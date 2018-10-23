@@ -1,6 +1,7 @@
 from typing import List
 
-from datastructures import KeyedItem
+from datastructures import KeyedItem, LinkedList
+from .n_square import insertion_sort
 
 
 def radixsort(items: List[KeyedItem], base: int=10, order=None) -> List[KeyedItem]:
@@ -73,5 +74,28 @@ def countsort(items: List[KeyedItem], order=None) -> List[KeyedItem]:
     if value_shift:
         for item in sorted_items:
             item.key -= value_shift
+
+    return sorted_items
+
+
+def bucketsort(items: List[KeyedItem], order=None) -> List[KeyedItem]:
+    """Non-comparison-based sorting algorithm
+    average is theta(n) when the distribution is uniform"""
+    min_value = min(items, key=lambda it: it.key).key
+    max_value = max(items, key=lambda it: it.key).key
+    delta_value = max_value - min_value
+    nb_items = len(items)
+
+    buckets = [[] for i in range(len(items))]
+    for item in items:
+        ind = int((nb_items-1)*(item.key - min_value)/delta_value)
+        buckets[ind].append(item)
+
+    sorted_items = []
+    if order == 'max':
+        buckets.reverse()
+    for bucket in buckets:
+        insertion_sort(bucket, order=order)
+        sorted_items += bucket
 
     return sorted_items

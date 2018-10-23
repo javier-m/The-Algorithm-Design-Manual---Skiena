@@ -1,6 +1,6 @@
 import random
 
-from sorting import radixsort, countsort
+from sorting import radixsort, countsort, bucketsort
 from datastructures import KeyedItem
 
 
@@ -44,3 +44,17 @@ def test_negative_numbers_countsort():
     items = [item for item in sorted_items]
     random.shuffle(items)
     assert countsort(items) == sorted_items
+
+
+def test_min_bucketsort():
+    sorted_items = [KeyedItem(key=i) for i in range(100)]
+    items = [item for item in sorted_items]
+    random.shuffle(items)
+    assert bucketsort(items) == sorted_items
+
+
+def test_max_bucketsort():
+    sorted_items = [KeyedItem(key=i) for i in range(99, -1, -1)]
+    items = [item for item in sorted_items]
+    random.shuffle(items)
+    assert bucketsort(items, order='max') == sorted_items
