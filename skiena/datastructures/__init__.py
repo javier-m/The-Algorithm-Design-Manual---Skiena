@@ -8,4 +8,4 @@ from .dictionnary import Dictionnary
 from .priority_queue import PriorityQueue
 from .hash_table import HashTable
 from .heap import Heap
-from .union_find import UnionFind
+from .union_find import UnionFind, LazyUnionFind
